@@ -7,7 +7,7 @@
 <a href = "mailto:nguyentientai10@gmail.com"><img src="https://img.icons8.com/fluency/48/000000/send-mass-email.png" alt="License"></a>
 </p>
 
-## Class Online: Learn NodeJs With Tai Dev
+## Class Online: Learn backend With Tai Dev
 
 ## Team Word: Liên hệ công việc https://profile-forme.com
 
