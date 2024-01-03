@@ -41,7 +41,6 @@ VALUES
 -- Update due_date for all todo_list items
 UPDATE public.todo_list
 SET due_date = '2022-02-28';
-
 ```
 ## ALTER
 ```sql
@@ -71,7 +70,6 @@ SELECT * FROM public.todo_list WHERE created_at > '2024-05-01';
 
 ## EXPLAIN
 ```sql
--- EXPLAIN --
 EXPLAIN SELECT * FROM public.todo_list WHERE user_id = 1;
 ```
 
