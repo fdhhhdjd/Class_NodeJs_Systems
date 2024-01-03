@@ -1,5 +1,8 @@
 # SQL Queries Collection
 
+## Document: https://www.dofactory.com/sql
+## EXAMPLE: https://sqlbolt.com/
+
 Explore this repository to discover a variety of SQL queries for common tasks. Whether you're a beginner or an experienced SQL user, these examples can help improve your understanding of SQL statements.
 
 ## Basic SELECT
