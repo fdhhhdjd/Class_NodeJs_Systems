@@ -69,6 +69,12 @@ SELECT * FROM public.todo_list WHERE user_id = 1;
 SELECT * FROM public.todo_list WHERE created_at > '2024-05-01';
 ```
 
+## EXPLAIN
+```sql
+-- EXPLAIN --
+EXPLAIN SELECT * FROM public.todo_list WHERE user_id = 1;
+```
+
 ## ORDER BY Clause
 ```sql
 SELECT * FROM public.user ORDER BY username ASC; -- Sort big -> small
