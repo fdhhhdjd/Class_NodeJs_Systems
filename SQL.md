@@ -155,6 +155,26 @@ SELECT MIN(id) AS smallest_user_id, MAX(id) AS largest_user_id FROM public.user;
 SELECT MIN(due_date) AS earliest_due_date, MAX(due_date) AS latest_due_date FROM public.todo_list;
 ```
 
+### TRANSACTION
+
+```sql
+-- Started transaction
+BEGIN;
+
+-- Command sql 1
+INSERT INTO public.user (username, email, password)
+VALUES ('user4', 'user4@email.com', 'password1');
+
+-- Command sql 2
+INSERT INTO public.todo_list (title, user_id)
+VALUES ('Play', 4);
+
+-- Commit if it succeeded
+COMMIT;
+
+-- Rollback if 1 command failed
+ROLLBACK;
+```
 
 
 
