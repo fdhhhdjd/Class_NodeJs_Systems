@@ -43,7 +43,7 @@ UPDATE public.todo_list
 SET due_date = '2022-02-28';
 
 ```
-## Alter Table
+## ALTER
 ```sql
 ALTER TABLE public.todo_list
 ADD COLUMN due_date DATE;
@@ -112,17 +112,17 @@ SELECT *,
        END AS role
 FROM public.user;
 ```
-## BETWEEN Operator
+## BETWEEN OPERATOR
 ```sql
 SELECT * FROM public.user WHERE status BETWEEN 1 AND 10;
 ```
-## LIKE Operator
+## LIKE OPERATOR
 ```sql
 SELECT * FROM public.user WHERE username LIKE '%user%'; -- Search anywhere
 SELECT * FROM public.user WHERE username LIKE 'user%'; -- Must start with 'user'
 SELECT * FROM public.user WHERE username LIKE 'user%'; -- Must end with 'user'
 ```
-## EXISTS Operator
+## EXISTS OPERATOR
 ```sql
 SELECT *
 FROM public.user
@@ -132,5 +132,25 @@ WHERE EXISTS (
     WHERE T.status = 10
 );
 ```
+### HAVING
+```sql
+SELECT user_id, COUNT(*) AS todo_count
+    FROM public.todo_list
+        GROUP BY user_id
+            HAVING COUNT(*) >= 2;
+```
+
+### COUNT
+```sql
+SELECT user_id, COUNT(*) AS todo_count FROM public.todo_list GROUP BY user_id;
+```
+
+### MIN and MAX
+```sql
+SELECT MIN(id) AS smallest_user_id, MAX(id) AS largest_user_id FROM public.user;
+SELECT MIN(due_date) AS earliest_due_date, MAX(due_date) AS latest_due_date FROM public.todo_list;
+```
+
+
 
 
