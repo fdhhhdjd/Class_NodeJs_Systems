@@ -45,12 +45,8 @@ SET due_date = '2022-02-28';
 ```
 ## Alter Table
 ```sql
-```
-## Basic SELECT
-```sql
 ALTER TABLE public.todo_list
 ADD COLUMN due_date DATE;
-
 ```
 
 ## Basic SELECT
