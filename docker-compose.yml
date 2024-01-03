@@ -28,7 +28,7 @@ services:
       timeout: 3s
       retries: 3
 
-###! NETWORD GENERAL ###
+###* NETWORD GENERAL ###
 networks:
   fullstack:
     driver: bridge
