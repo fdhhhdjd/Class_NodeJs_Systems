@@ -75,8 +75,8 @@ EXPLAIN SELECT * FROM public.todo_list WHERE user_id = 1;
 
 ## ORDER BY Clause
 ```sql
-SELECT * FROM public.user ORDER BY username ASC; -- Sort big -> small
-SELECT * FROM public.todo_list ORDER BY created_at DESC; -- Sort small -> big
+SELECT * FROM public.user ORDER BY username ASC; -- Sort small -> big
+SELECT * FROM public.todo_list ORDER BY created_at DESC; -- Sort big -> small
 SELECT * FROM public.todo_list ORDER BY due_date ASC, title ASC;
 ```
 
