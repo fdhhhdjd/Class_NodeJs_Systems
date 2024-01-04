@@ -42,6 +42,13 @@ VALUES
 UPDATE public.todo_list
 SET due_date = '2022-02-28';
 ```
+
+### DROP ALL TABLE 
+```sql
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+```
+
 ### ALTER
 ```sql
 ALTER TABLE public.todo_list
