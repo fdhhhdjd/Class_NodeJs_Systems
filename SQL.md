@@ -100,7 +100,7 @@ SELECT * FROM public.todo_list ORDER BY title ASC OFFSET 1;  -- Start from row n
 ```sql
 SELECT DISTINCT title, user_id FROM public.todo_list;
 ```
-## Logical Operators
+## LOGICAL Operators
 ```sql
 SELECT * FROM public.user WHERE id = 1 AND status = 10;
 SELECT * FROM public.user WHERE id = 1 OR status = 10;
