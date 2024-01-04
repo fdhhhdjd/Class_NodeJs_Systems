@@ -176,5 +176,47 @@ COMMIT;
 ROLLBACK;
 ```
 
+## TRIGGER 
+```sql
+CREATE OR REPLACE FUNCTION insert_hello_label_after_user_change()
+RETURNS TRIGGER AS
+$$
+BEGIN
+    IF TG_OP = 'INSERT' AND NEW.username IS NOT NULL THEN
+        INSERT INTO public.label (name) VALUES ('hello create');
+    END IF;
+
+    IF TG_OP = 'UPDATE' AND NEW.username <> OLD.username THEN
+        INSERT INTO public.label (name) VALUES ('hello update');
+    END IF;
+    
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_insert_hello_label_after_user_change
+AFTER INSERT OR UPDATE
+ON public."user"
+FOR EACH ROW
+EXECUTE FUNCTION insert_hello_label_after_user_change();
+```
+
+## FUNCTION
+```sql
+CREATE OR REPLACE FUNCTION view_label_data()
+RETURNS TABLE ( label_name VARCHAR(255)) AS
+$$
+BEGIN
+    RETURN QUERY
+    SELECT name
+    FROM public.label;
+END;
+$$
+LANGUAGE plpgsql;
+
+SELECT * FROM view_label_data();
+```
+
 
 
