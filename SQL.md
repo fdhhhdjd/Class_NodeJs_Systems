@@ -200,6 +200,15 @@ AFTER INSERT OR UPDATE
 ON public."user"
 FOR EACH ROW
 EXECUTE FUNCTION insert_hello_label_after_user_change();
+
+SELECT public.user.* FROM public.user;
+SELECT public.label.* FROM public.label;
+
+INSERT INTO public."user" (username, email, password)
+VALUES
+    ('user5', 'user5@email.com', 'password5')
+	
+UPDATE public.user SET username = 'user442'  where id=4;
 ```
 
 ## FUNCTION
@@ -217,6 +226,30 @@ LANGUAGE plpgsql;
 
 SELECT * FROM view_label_data();
 ```
-
+## PRODUCER
+```sql
+CREATE OR REPLACE PROCEDURE insert_or_update_user(
+    p_username VARCHAR,
+    p_email VARCHAR,
+    p_password VARCHAR
+)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    -- Check username exits 
+    IF EXISTS (SELECT 1 FROM public."user" WHERE username = p_username) THEN
+        -- If exit executed UPDATE
+        UPDATE public."user"
+        SET email = p_email, password = p_password
+        WHERE username = p_username;
+    ELSE
+        -- If not exit executed INSERT
+        INSERT INTO public."user" (username, email, password)
+        VALUES (p_username, p_email, p_password);
+    END IF;
+END;
+$$;
+CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
+```
 
 
