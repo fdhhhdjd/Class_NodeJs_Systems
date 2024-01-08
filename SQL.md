@@ -264,14 +264,18 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 ## 1. CHECK ROLE USER 
 ```sql
     SELECT * FROM pg_user;
-    
+
+    SELECT current_user;
+
     SELECT COUNT(*) FROM pg_user;
 
     SELECT * FROM information_schema.table_privileges WHERE grantee = 'taidev';
 ```
-## 2. CREATE USER
+## 2. CREATE USER AND FORGET PASSWORD
 ```sql
     CREATE USER tai_demo WITH ENCRYPTED PASSWORD '123456';
+
+    ALTER USER taidev WITH PASSWORD 'taidev';
 ```
 
 ## 3. GRANT ACCESS SCHEMA PUBLIC
@@ -310,4 +314,20 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
     REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM tai_demo; 
 
     DROP USER tai_demo; 
+```
+
+## 7. SET PERMISSION
+```sql
+    ALTER USER tai_demo WITH SUPERUSER, CREATEDB, LOGIN;
+
+    ALTER USER fdhhhdjd WITH NOSUPERUSER;
+
+    SELECT * FROM pg_user where usename='taidev';
+```
+
+## 8. DISCONNECT ACCOUNT
+```sql
+    ALTER USER username WITH NOLOGIN;
+
+    ALTER USER username WITH LOGIN;
 ```
