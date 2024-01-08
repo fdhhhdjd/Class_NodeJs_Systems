@@ -263,6 +263,10 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 
 ## 1. CHECK ROLE USER 
 ```sql
+    SELECT * FROM pg_user;
+    
+    SELECT COUNT(*) FROM pg_user;
+
     SELECT * FROM information_schema.table_privileges WHERE grantee = 'taidev';
 ```
 ## 2. CREATE USER
@@ -293,7 +297,7 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 ## 5. REVOKE
 ```sql
     REVOKE CREATE ON TABLE public.user FROM tai_demo; 
-    
+
     REVOKE CREATE ON ALL TABLES IN SCHEMA public FROM tai_demo; 
 ```
 
