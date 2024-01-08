@@ -273,21 +273,27 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 ## 3. GRANT ACCESS SCHEMA PUBLIC
 ```sql
   GRANT USAGE ON SCHEMA public TO tai_demo; 
+
   GRANT SELECT ON ALL TABLES IN SCHEMA public TO tai_demo;
+
   GRANT SELECT ON TABLE public.user TO tai_demo;
 ```
 
 ## 4. GRANT ACCESS PRIVILEGES TABLE SCHEMA PUBLIC
 ```sql
     GRANT SELECT ON ALL TABLES IN SCHEMA public TO tai_demo;
+
     GRANT SELECT,CREATE  ON ALL TABLES IN SCHEMA public TO tai_demo;
+
     GRANT CREATE,UPDATE  ON ALL TABLES IN SCHEMA public TO tai_demo;
+
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO tai_demo;
 ```
 
 ## 5. REVOKE
 ```sql
     REVOKE CREATE ON TABLE public.user FROM tai_demo; 
+    
     REVOKE CREATE ON ALL TABLES IN SCHEMA public FROM tai_demo; 
 ```
 
