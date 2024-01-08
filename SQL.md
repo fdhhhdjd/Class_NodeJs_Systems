@@ -331,3 +331,15 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 
     ALTER USER username WITH LOGIN;
 ```
+
+## BACKUP
+
+# 1. pg_dump, pg_dumpall
+```sql
+    pg_dump or pg_dumpall -h [host] -U [username] -W [database] > [path file]
+```
+
+# 2. RESTORE
+```sq;
+    cat ./migrations/backup/file.sql | psql "link online" 
+```
