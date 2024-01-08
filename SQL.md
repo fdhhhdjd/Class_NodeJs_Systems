@@ -332,7 +332,7 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
     ALTER USER username WITH LOGIN;
 ```
 
-## BACKUP
+# BACKUP and RESTORE
 
 # 1. pg_dump, pg_dumpall
 ```sql
