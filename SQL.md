@@ -340,6 +340,6 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 ```
 
 # 2. RESTORE
-```sq;
+```sql;
     cat ./migrations/backup/file.sql | psql "link online" 
 ```
