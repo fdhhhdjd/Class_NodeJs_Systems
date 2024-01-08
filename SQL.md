@@ -259,4 +259,45 @@ $$;
 CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 ```
 
+# SECURITY 
 
+## 1. CHECK ROLE USER 
+```sql
+    SELECT * FROM information_schema.table_privileges WHERE grantee = 'taidev';
+```
+## 2. CREATE USER
+```sql
+    CREATE USER tai_demo WITH ENCRYPTED PASSWORD '123456';
+```
+
+## 3. GRANT ACCESS SCHEMA PUBLIC
+```sql
+  GRANT USAGE ON SCHEMA public TO tai_demo; 
+  GRANT SELECT ON ALL TABLES IN SCHEMA public TO tai_demo;
+  GRANT SELECT ON TABLE public.user TO tai_demo;
+```
+
+## 4. GRANT ACCESS PRIVILEGES TABLE SCHEMA PUBLIC
+```sql
+    GRANT SELECT ON ALL TABLES IN SCHEMA public TO tai_demo;
+    GRANT SELECT,CREATE  ON ALL TABLES IN SCHEMA public TO tai_demo;
+    GRANT CREATE,UPDATE  ON ALL TABLES IN SCHEMA public TO tai_demo;
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO tai_demo;
+```
+
+## 5. REVOKE
+```sql
+    REVOKE CREATE ON TABLE public.user FROM tai_demo; 
+    REVOKE CREATE ON ALL TABLES IN SCHEMA public FROM tai_demo; 
+```
+
+## 6. DROP USER AND REVOKE 
+```sql
+    REVOKE ALL PRIVILEGES ON DATABASE class_fullstack_todolist FROM tai_demo; 
+
+    REVOKE ALL PRIVILEGES ON SCHEMA public FROM tai_demo; 
+
+    REVOKE ALL PRIVILEGES ON ALL TABLES IN SCHEMA public FROM tai_demo; 
+
+    DROP USER tai_demo; 
+```

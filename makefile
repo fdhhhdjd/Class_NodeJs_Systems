@@ -20,7 +20,7 @@ run-down:
 	docker-compose -f $(DOCKER_COMPOSE) down		
 
 backup-data-pg_dump:
-	docker exec -i $(PG_CONTAINER) pg_dump -h $(PG_CONTAINER) -U $(POSTGRES_USER) $(POSTGRES_DB) && > $(FOLDER_BACKUP)
+	docker exec -i $(PG_CONTAINER) pg_dump -h $(PG_CONTAINER) -U $(POSTGRES_USER) $(POSTGRES_DB)  > $(FOLDER_BACKUP)
 
 backup-data-pg_dumpall:
 	docker exec -t $(PG_CONTAINER) pg_dumpall -c -U $(POSTGRES_USER) > $(FOLDER_BACKUP)
