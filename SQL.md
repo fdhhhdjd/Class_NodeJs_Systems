@@ -284,6 +284,8 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 
   GRANT SELECT ON ALL TABLES IN SCHEMA public TO tai_demo;
 
+  GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA public TO tai_demo;
+
   GRANT SELECT ON TABLE public.user TO tai_demo;
 ```
 
