@@ -27,6 +27,3 @@ backup-data-pg_dumpall:
 
 restore-data:
 	cat $(FILE_SQL) | docker exec -i $(PG_CONTAINER) psql -h localhost -U $(POSTGRES_USER) -d $(POSTGRES_DB)
-
-a:
-	pg_dump -h class-fullstack-online-8058.8nk.cockroachlabs.cloud -U taidev -W class_fullstack_todolist > dump_`date +%Y-%m-%d"_"%H_%M_%S`.sql
