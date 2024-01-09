@@ -36,6 +36,7 @@ VALUES
     (3, 3), -- Shopping list has the label "Work"
     (3, 1); -- Shopping list has the label "Important"
 ```
+
 ### UPDATE
 ```sql
 -- Update due_date for all todo_list items
@@ -98,21 +99,25 @@ SELECT todo_list.*, name, due_date FROM public.todo_list
 	JOIN public.todo_list_label ON todo_list.id = todo_list_label.todo_list_id
 		JOIN public.label ON todo_list_label.label_id = label.id;
 ```
+
 ### LIMIT and OFFSET
 ```sql
 SELECT * FROM public.user ORDER BY username DESC LIMIT 2;
 SELECT * FROM public.todo_list ORDER BY title ASC OFFSET 1;  -- Start from row number five
 ```
+
 ### DISTINCT
 ```sql
 SELECT DISTINCT title, user_id FROM public.todo_list;
 ```
+
 ### LOGICAL Operators
 ```sql
 SELECT * FROM public.user WHERE id = 1 AND status = 10;
 SELECT * FROM public.user WHERE id = 1 OR status = 10;
 SELECT * FROM public.user WHERE NOT status = 20;
 ```
+
 ### CASE Statement
 ```sql
 SELECT *,
@@ -123,16 +128,19 @@ SELECT *,
        END AS role
 FROM public.user;
 ```
+
 ### BETWEEN OPERATOR
 ```sql
 SELECT * FROM public.user WHERE status BETWEEN 1 AND 10;
 ```
+
 ### LIKE OPERATOR
 ```sql
 SELECT * FROM public.user WHERE username LIKE '%user%'; -- Search anywhere
 SELECT * FROM public.user WHERE username LIKE 'user%'; -- Must start with 'user'
 SELECT * FROM public.user WHERE username LIKE 'user%'; -- Must end with 'user'
 ```
+
 ### EXISTS OPERATOR
 ```sql
 SELECT *
@@ -143,6 +151,7 @@ WHERE EXISTS (
     WHERE T.status = 10
 );
 ```
+
 ### HAVING
 ```sql
 SELECT user_id, COUNT(*) AS todo_count
@@ -233,6 +242,7 @@ LANGUAGE plpgsql;
 
 SELECT * FROM view_label_data();
 ```
+
 ### PRODUCER
 ```sql
 CREATE OR REPLACE PROCEDURE insert_or_update_user(
@@ -271,6 +281,7 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 
     SELECT * FROM information_schema.table_privileges WHERE grantee = 'taidev';
 ```
+
 ## 2. CREATE USER AND FORGET PASSWORD
 ```sql
     CREATE USER tai_demo WITH ENCRYPTED PASSWORD '123456';
