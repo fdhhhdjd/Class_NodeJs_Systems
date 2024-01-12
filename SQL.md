@@ -5,6 +5,12 @@
 
 Explore this repository to discover a variety of SQL queries for common tasks. Whether you're a beginner or an experienced SQL user, these examples can help improve your understanding of SQL statements.
 
+## COPY TABLE
+```sql
+    CREATE TABLE public.user_copy as SELECT * FROM public.user;
+    \dt
+```
+
 ### INSERT
 ```sql
 -- Insert users
@@ -356,3 +362,72 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 ```sql;
     cat ./migrations/backup/file.sql | psql "link online" 
 ```
+
+
+# INDEX 
+ <!-- 1ms = 1000µs. 1 milliseconds = 1000 microseconds -->
+```sql
+    SELECT indexname, indexdef FROM pg_indexes WHERE tablename = 'user';
+    SHOW INDEX FROM public."user";
+
+    SELECT * from public.user WHERE status = 40;
+
+    CREATE INDEX idx_email_status on public.user(email, status);
+    CREATE INDEX idx_status_email on public.user(status, email);
+
+    DROP INDEX idx_email_status;
+    DROP INDEX idx_status_email;
+
+    EXPLAIN analyze SELECT status from public.user WHERE status = 40;
+
+    EXPLAIN analyze SELECT email from public.user WHERE email='user128@example.com';
+
+    EXPLAIN ANALYZE SELECT email FROM public."user" WHERE email = 'user128@example.com' AND status = 40;
+
+    EXPLAIN ANALYZE SELECT email FROM public."user" WHERE status = 40  AND email = 'user128@example.com';
+
+    ---
+    CREATE INDEX idx_email on public.user(email);
+
+    DROP INDEX idx_email;
+
+    EXPLAIN analyze SELECT email from public.user WHERE email='user128@example.com';
+
+    EXPLAIN analyze SELECT * from public.user WHERE email='user128@example.com';
+    EXPLAIN analyze SELECT email, status from public.user WHERE email='user128@example.com';
+```
+
+## 6. REVOKE DROP TRUNCATE DELETE
+```sql
+    CREATE USER demo WITH ENCRYPTED PASSWORD '123456';
+    SHOW GRANTS FOR demo;
+
+    SELECT privilege_type FROM information_schema.table_privileges WHERE table_name = 'todo_list_copy' AND grantee = 'demo';
+
+    REVOKE DELETE  ON ALL TABLES IN SCHEMA public FROM demo;  -- Revoke TRUNCATE and Delete
+
+    REVOKE DROP ON ALL TABLES IN SCHEMA public FROM demo;
+```
+
+# DELETE
+```sql
+    CREATE TABLE public.todo_list_copy as SELECT * FROM public.todo_list;
+
+    INSERT INTO public.todo_list_copy SELECT * FROM public.todo_list;
+
+    SELECT * FROM public.todo_list_copy;
+
+    DROP TABLE public.todo_list_copy;
+
+    DELETE from public.todo_list_copy;
+
+    DELETE from public.todo_list_copy where user_id=1;
+
+    TRUNCATE public.todo_list_copy;
+
+    BEGIN;
+        DELETE from public.todo_list_copy
+    ROLLBACK;
+
+```
+
