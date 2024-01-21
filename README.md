@@ -9,6 +9,12 @@
 
 ## Class Online: Learn backend and systems With teacher Tai 
 
+## Connect
+
+[Database](https://cockroachlabs.cloud/clusters)
+[Connect to CockroachDB with Node.js and Knex](https://github.com/cockroachlabs/example-app-node-knex/blob)
+
+
 ## Team Word: Liên hệ công việc https://profile-forme.com
 
 ## 1. Nguyen Tien Tai ( MainTain 🚩).
@@ -16,6 +22,7 @@
 ## Tài Khoản Donate li Cf để có động lực code cho anh em tham khảo 😄.
 
 ![giphy](https://3.bp.blogspot.com/-SzGvXn2sTmw/V6k-90GH3ZI/AAAAAAAAIsk/Q678Pil-0kITLPa3fD--JkNdnJVKi_BygCLcB/s1600/cf10-fbc08%2B%25281%2529.gif)
+
 
 ## Mk: NGUYEN TIEN TAI
 
