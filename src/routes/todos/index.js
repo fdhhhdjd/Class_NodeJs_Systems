@@ -16,9 +16,15 @@ router.get("/get/:todoId", todoController.getDetail);
 router.post("/create", todoController.create);
 
 // * 4. UPDATE
-router.put("/update", todoController.create);
+router.patch("/update/:todoId", todoController.update);
 
-// * 5. DELETE
-router.delete("/delete/:todoId", todoController.create);
+// * 5. UPSERT
+router.post("/upsert", todoController.upsert);
+
+// * 6. DELETE
+router.delete("/delete/label", todoController.deleteTodoAssignLabel);
+
+// * 7. DELETE
+router.delete("/delete/:todoId", todoController.delete);
 
 module.exports = router;

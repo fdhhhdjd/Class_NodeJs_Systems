@@ -15,6 +15,13 @@ class UserController {
     });
   }
 
+  async getTodoFollowUser(req, res, next) {
+    return res.status(200).json({
+      message: "Get todo of user Success",
+      metadata: await userService.getTodoFollowUser(req.params),
+    });
+  }
+
   async create(req, res, next) {
     return res.status(201).json({
       message: "Create success",

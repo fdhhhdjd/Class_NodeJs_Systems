@@ -1,30 +1,54 @@
 const todoService = require("../services/todo.service");
 
 class TodoController {
-  // Todo 1. Get all
-  async getAll(req, res, next) {
+  async getAll(_, res, __) {
     return res.status(200).json({
       message: "Get all Success",
       metadata: await todoService.getAll(),
     });
   }
 
-  // Todo 2. Get detail
-  async getDetail(req, res, next) {
+  async getDetail(req, res, _) {
     return res.status(200).json({
       message: "Get detail Success",
       metadata: await todoService.getDetail(req.params),
     });
   }
 
-  // Todo 3. Create detail
-  async create(req, res, next) {}
+  async create(req, res, _) {
+    return res.status(201).json({
+      message: "Create success",
+      metadata: await todoService.create(req.body),
+    });
+  }
 
-  // Todo 4. Update detail
-  async update(req, res, next) {}
+  async update(req, res, _) {
+    return res.status(200).json({
+      message: "Update success",
+      metadata: await todoService.update(req.body, req.params),
+    });
+  }
 
-  // Todo 5. Delete id
-  async delete(req, res, next) {}
+  async upsert(req, res, _) {
+    return res.status(200).json({
+      message: "Upsert success",
+      metadata: await todoService.upsert(req.body),
+    });
+  }
+
+  async deleteTodoAssignLabel(req, res, _) {
+    return res.status(200).json({
+      message: "Upsert success",
+      metadata: await todoService.deleteTodoAssignLabel(req.body),
+    });
+  }
+
+  async delete(req, res, _) {
+    return res.status(200).json({
+      message: "Delete success",
+      metadata: await todoService.delete(req.params),
+    });
+  }
 }
 
 module.exports = new TodoController();

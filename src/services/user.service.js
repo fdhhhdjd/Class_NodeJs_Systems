@@ -2,7 +2,6 @@
 const userModel = require("../models/user.model");
 
 class UserService {
-  // Todo 1. Get all
   async getAll() {
     const data = {
       id: "id",
@@ -13,7 +12,6 @@ class UserService {
     return result;
   }
 
-  // Todo 2. Get detail
   async getDetail({ userId }) {
     const data = {
       id: "id",
@@ -24,13 +22,26 @@ class UserService {
     return result;
   }
 
-  // Todo 3. Create detail
+  async getTodoFollowUser({ userId }) {
+    const data = {
+      id: "todo_list.id",
+      title: "todo_list.title",
+      username: "user.username",
+      email: "user.email",
+    };
+
+    const result = await userModel.getTodoFollowUser(
+      { "user.id": userId },
+      data
+    );
+    return result;
+  }
+
   async create({ username, email, password }) {
     const result = await userModel.createUser({ username, email, password });
     return result;
   }
 
-  // Todo 4. Update detail
   async update({ username, email, password }, { userId }) {
     const result = await userModel.updateUser(
       { username, email, password },
@@ -39,7 +50,6 @@ class UserService {
     return result;
   }
 
-  // Todo 5. Delete id
   async delete({ userId }) {
     const result = await userModel.deleteId({ id: Number(userId) });
     return result;

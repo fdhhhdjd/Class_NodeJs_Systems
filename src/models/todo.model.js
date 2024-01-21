@@ -2,10 +2,10 @@
 const knexInstance = require("../databases/init.knex");
 
 module.exports = {
-  createUser: (data) =>
+  create: (data) =>
     new Promise((resolve, reject) => {
       try {
-        const result = knexInstance("user")
+        const result = knexInstance("todo_list")
           .insert(data)
           .onConflict("id")
           .merge()
@@ -16,10 +16,10 @@ module.exports = {
       }
     }),
 
-  updateUser: async (data, query) =>
+  update: async (data, query) =>
     new Promise((resolve, reject) => {
       try {
-        const result = knexInstance("user")
+        const result = knexInstance("todo_list")
           .update(data)
           .where(query)
           .returning(["id"]);
@@ -30,24 +30,28 @@ module.exports = {
     }),
 
   deleteId: async (query) => {
-    const result = knexInstance("user").del().where(query).returning(["id"]);
+    const result = knexInstance("todo_list")
+      .del()
+      .where(query)
+      .returning(["id"]);
     return result;
   },
 
-  getUserById: async (query, data) => {
-    const result = await knexInstance("user").select(data).where(query);
-    return result;
-  },
-
-  getAllUser: async (data) => {
-    const result = await knexInstance("user")
+  getById: async (query, data) => {
+    const result = await knexInstance("todo_list")
+      .join("user", "todo_list.user_id", "=", "user.id")
       .select(data)
-      .orderBy("created_at", "desc");
+      .where(query);
     return result;
   },
 
-  getTodoFollowUser: async (query, data) => {
-    console.log(query, data);
+  getCount: async () => {
+    const result = await knexInstance("todo_list").count().first();
+
+    return result.count;
+  },
+
+  getAll: async (data) => {
     const result = await knexInstance("todo_list_label")
       .fullOuterJoin(
         "todo_list",
@@ -63,8 +67,10 @@ module.exports = {
         },
         data
       )
-      .where(query);
+      .orderBy("todo_list.created_at", "desc");
 
-    return result;
+    const resultCount = await module.exports.getCount();
+
+    return { count: resultCount, result };
   },
 };
