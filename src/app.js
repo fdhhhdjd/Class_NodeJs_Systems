@@ -9,6 +9,7 @@ app.use(express.json());
 
 require("./databases/init.postgresql");
 
-app.use("/api", require("./routes/todo"));
+app.use("/api/todos", require("./routes/todos"));
+app.use("/api/users", require("./routes/users"));
 
 module.exports = app;
