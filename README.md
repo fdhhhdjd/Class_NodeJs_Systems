@@ -7,12 +7,13 @@
 <a href = "mailto:nguyentientai10@gmail.com"><img src="https://img.icons8.com/fluency/48/000000/send-mass-email.png" alt="License"></a>
 </p>
 
-## Class Online: Learn backend and systems With teacher Tai 
+# Class Online: Learn backend and systems With teacher Tai 
 
-## Connect
+# Connect
 
-[Database](https://cockroachlabs.cloud/clusters)
-[Connect to CockroachDB with Node.js and Knex](https://github.com/cockroachlabs/example-app-node-knex/blob)
+## [Database](https://cockroachlabs.cloud/clusters)
+
+## [Connect to CockroachDB with Node.js and Knex](https://github.com/cockroachlabs/example-app-node-knex/blob)
 
 
 ## Team Word: Liên hệ công việc https://profile-forme.com
