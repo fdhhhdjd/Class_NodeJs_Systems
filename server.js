@@ -8,3 +8,6 @@ const server = app.listen(PORT, () => {
 });
 
 // Then we ctrl + c
+process.on("SIGINT", () => {
+  server.close(() => console.log(`Exit Server Express`));
+});
