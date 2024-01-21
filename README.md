@@ -13,7 +13,9 @@
 
 ## [Database](https://cockroachlabs.cloud/clusters)
 
-## [Connect to CockroachDB with Node.js and Knex](https://github.com/cockroachlabs/example-app-node-knex/blob)
+## [Connect to CockroachDB with Node.js and Knex](https://github.com/cockroachlabs/example-app-node-knex)
+
+## [Knex](https://knexjs.org/)
 
 
 ## Team Word: Liên hệ công việc https://profile-forme.com
