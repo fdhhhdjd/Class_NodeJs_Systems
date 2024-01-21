@@ -1,51 +1,71 @@
-const crypto = require("crypto");
+//* IMPORT
+const todoModel = require("../models/todo.model");
+const todoListLabelModel = require("../models/todo_list_label");
 
 class TodoService {
   // Todo 1. Get all
   async getAll() {
-    let uuid = crypto.randomUUID();
-    const todo = [
-      {
-        id: uuid,
-        name: "Nguyen Tien Tai",
-        age: 23,
-      },
-      {
-        id: uuid,
-        name: "Nguyen Văn Hào",
-        age: 29,
-      },
-    ];
-    return todo;
+    const data = {
+      id: "todo_list.id",
+      title: "todo_list.title",
+      username: "user.username",
+      email: "user.email",
+    };
+    const result = await todoModel.getAll(data);
+    return result;
   }
 
   // Todo 2. Get detail
   async getDetail({ todoId }) {
-    const todo = [
-      {
-        id: 1,
-        name: "Nguyen Tien Tai",
-        age: 23,
-      },
-      {
-        id: 2,
-        name: "Nguyen Văn Hào",
-        age: 29,
-      },
-    ];
-
-    const result = todo.filter((item) => item.id == todoId);
+    const data = {
+      id: "todo_list.id",
+      title: "todo_list.title",
+      username: "user.username",
+      email: "user.email",
+    };
+    const result = await todoModel.getById({ "todo_list.id": todoId }, data);
     return result;
   }
 
-  // Todo 3. Create detail
-  async create() {}
+  // Todo 3. Create
+  async create({ title, user_id }) {
+    const result = await todoModel.create({ title, user_id });
+    return result;
+  }
 
-  // Todo 4. Update detail
-  async update() {}
+  // Todo 4. Update
+  async update({ title, user_id }, { todoId }) {
+    const result = await todoModel.update(
+      { title, user_id },
+      { id: Number(todoId) }
+    );
+    return result;
+  }
 
-  // Todo 5. Delete id
-  async delete() {}
+  // Todo 5. Upsert
+  async upsert({ todo_list_id, label_id }) {
+    const result = await todoListLabelModel.upSertTodoWithLabel({
+      todo_list_id,
+      label_id,
+    });
+    return result;
+  }
+
+  // Todo 6. Delete todo label
+  async deleteTodoAssignLabel({ todo_list_id, label_id }) {
+    const result = await todoListLabelModel.deleteTodoAssignLabel({
+      todo_list_id: Number(todo_list_id),
+      label_id: Number(label_id),
+    });
+    return result;
+  }
+
+  // Todo 6. Delete id
+  async delete({ todoId }) {
+    console.log(todoId);
+    const result = await todoModel.deleteId({ id: Number(todoId) });
+    return result;
+  }
 }
 
 module.exports = new TodoService();
