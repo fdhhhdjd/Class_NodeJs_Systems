@@ -6,16 +6,16 @@ const userController = require("../../controllers/user.controller");
 
 const router = express.Router();
 
-router.get("/get/all", userController.getAll);
+router.get("/get/all", asyncHandler(userController.getAll));
 
-router.get("/get/:userId", userController.getDetail);
+router.get("/get/:userId", asyncHandler(userController.getDetail));
 
-router.get("/get/todo/:userId", userController.getTodoFollowUser);
+router.get("/get/todo/:userId", asyncHandler(userController.getTodoFollowUser));
 
-router.post("/create", userController.create);
+router.post("/create", asyncHandler(userController.create));
 
-router.patch("/update/:userId", userController.update);
+router.patch("/update/:userId", asyncHandler(userController.update));
 
-router.delete("/delete/:userId", userController.delete);
+router.delete("/delete/:userId", asyncHandler(userController.delete));
 
 module.exports = router;

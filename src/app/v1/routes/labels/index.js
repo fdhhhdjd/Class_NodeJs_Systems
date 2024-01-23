@@ -3,22 +3,18 @@ const express = require("express");
 
 //* IMPORT
 const labelController = require("../../controllers/label.controller");
+const { asyncHandler } = require("../../../../commons/helpers/asyncHandler");
 
 const router = express.Router();
 
-// * 1. GET ALL
-router.get("/get/all", labelController.getAll);
+router.get("/get/all", asyncHandler(labelController.getAll));
 
-// * 2. GET DETAIL
-router.get("/get/:labelId", labelController.getDetail);
+router.get("/get/:labelId", asyncHandler(labelController.getDetail));
 
-// * 3. CREATE
-router.post("/create", labelController.create);
+router.post("/create", asyncHandler(labelController.create));
 
-// * 4. UPDATE
-router.patch("/update/:labelId", labelController.update);
+router.patch("/update/:labelId", asyncHandler(labelController.update));
 
-// * 5. DELETE
-router.delete("/delete/:labelId", labelController.delete);
+router.delete("/delete/:labelId", asyncHandler(labelController.delete));
 
 module.exports = router;
