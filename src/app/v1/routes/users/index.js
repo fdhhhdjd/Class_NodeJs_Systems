@@ -3,6 +3,7 @@ const express = require("express");
 
 //* IMPORT
 const userController = require("../../controllers/user.controller");
+const { asyncHandler } = require("../../../../commons/helpers/asyncHandler");
 
 const router = express.Router();
 

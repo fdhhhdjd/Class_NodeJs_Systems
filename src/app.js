@@ -1,6 +1,7 @@
 //* LIB
 const express = require("express");
 const morgan = require("morgan");
+const { default: helmet } = require("helmet");
 const { NODE_ENV } = require("./commons/constants");
 const { NotFoundError } = require("./cores/error.response");
 const {
@@ -14,6 +15,7 @@ require("dotenv").config();
 
 app.use(express.json());
 app.use(morgan(morganConfig));
+app.use(helmet());
 
 require("./databases/init.knex");
 
