@@ -3,14 +3,15 @@ const express = require("express");
 
 //* IMPORT
 const todoController = require("../../controllers/todo.controller");
+const { asyncHandler } = require("../../../../commons/helpers/asyncHandler");
 
 const router = express.Router();
 
 // * 1. GET ALL
-router.get("/get/all", todoController.getAll);
+router.get("/get/all", asyncHandler(todoController.getAll));
 
 // * 2. GET DETAIL
-router.get("/get/:todoId", todoController.getDetail);
+router.get("/get/:todoId", asyncHandler(todoController.getDetail));
 
 // * 3. CREATE
 router.post("/create", todoController.create);
