@@ -18,7 +18,7 @@ class TodoService {
 
   // Todo 2. Get detail
   async getDetail({ todoId }) {
-    if (todoId1 == 1) throw new BadRequestRequestError();
+    if (!todoId) throw new BadRequestRequestError();
 
     const data = {
       id: "todo_list.id",
