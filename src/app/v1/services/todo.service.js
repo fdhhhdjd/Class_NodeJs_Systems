@@ -1,4 +1,5 @@
 //* IMPORT
+const { BadRequestRequestError } = require("../../../cores/error.response");
 const todoModel = require("../models/todo.model");
 const todoListLabelModel = require("../models/todo_list_label");
 
@@ -17,6 +18,8 @@ class TodoService {
 
   // Todo 2. Get detail
   async getDetail({ todoId }) {
+    if (!todoId) throw new BadRequestRequestError();
+
     const data = {
       id: "todo_list.id",
       title: "todo_list.title",

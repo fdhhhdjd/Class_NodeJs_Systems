@@ -1,5 +1,6 @@
 //* LIB
 const KNEX = require("knex");
+const { NODE_ENV } = require("../commons/constants");
 
 const knexInstance = KNEX({
   client: "cockroachdb",
@@ -12,13 +13,13 @@ const knexInstance = KNEX({
     idleTimeoutMillis: 30000, // Thời gian tối đa mà một kết nối có thể ở trong pool mà không được sử dụng trước khi bị giải phóng.
     reapIntervalMillis: 1000, //  Thời gian giữa các chu kỳ để giải phóng các kết nối không sử dụng.
   },
-  debug: process.env.NODE_ENV === "dev",
+  debug: process.env.NODE_ENV === NODE_ENV.DEV,
 });
 
 knexInstance
   .raw("SELECT 1")
   .then((_) => {
-    console.info("CONNECTED TO POSTGRESQL SUCCESS !!");
+    console.info("CONNECTED TO POSTGRESQL SUCCESS 🐘 !!");
     // const poolConfig = KNEX.client.pool;
 
     // console.info("Pool configuration:", poolConfig);

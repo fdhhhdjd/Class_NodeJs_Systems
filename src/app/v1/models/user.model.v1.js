@@ -1,10 +1,9 @@
-// IMPORT
+//* IMPORT
 const pool = require("../databases/init.pg");
 
 module.exports = {
   getUserById: async ({ id }, data) => {
     try {
-      // Lấy tên các cột từ data
       const columns = Object.values(data).join(", ");
 
       const result = await pool.query({

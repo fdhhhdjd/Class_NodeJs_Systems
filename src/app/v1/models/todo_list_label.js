@@ -1,5 +1,5 @@
 //* IMPORT
-const knexInstance = require("../databases/init.knex");
+const knexInstance = require("../../../databases/init.knex");
 
 module.exports = {
   upSertTodoWithLabel: async (data) => {
