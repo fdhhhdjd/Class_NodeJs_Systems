@@ -33,7 +33,9 @@ app.use(
   })
 );
 
+//* Database & Cache
 require("./databases/init.knex");
+require("./databases/init.redis");
 
 //* V1
 app.use("/api", require("./app/v1/routes"));

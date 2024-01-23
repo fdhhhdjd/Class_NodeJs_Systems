@@ -19,7 +19,7 @@ const knexInstance = KNEX({
 knexInstance
   .raw("SELECT 1")
   .then((_) => {
-    console.info("CONNECTED TO POSTGRESQL SUCCESS !!");
+    console.info("CONNECTED TO POSTGRESQL SUCCESS 🐘 !!");
     // const poolConfig = KNEX.client.pool;
 
     // console.info("Pool configuration:", poolConfig);
