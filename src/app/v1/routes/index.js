@@ -9,7 +9,6 @@ const {
   ReasonPhrases,
 } = require("../../../commons/utils/httpStatusCode");
 const redisInstance = require("../../../databases/init.redis");
-const { Test } = require("../../../commons/keys/test");
 const { User } = require("../../../commons/keys/user");
 
 const router = express.Router();

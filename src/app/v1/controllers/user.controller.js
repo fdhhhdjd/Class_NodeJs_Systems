@@ -3,9 +3,9 @@ const { SuccessResponse, Created } = require("../../../cores/success.response");
 const userService = require("../services/user.service");
 
 class UserController {
-  async getAll(_, res, ___) {
+  async getAll(req, res, ___) {
     new SuccessResponse({
-      metadata: await userService.getAll(),
+      metadata: await userService.getAll(req),
     }).send(res);
   }
 
@@ -36,6 +36,24 @@ class UserController {
   async delete(req, res, ___) {
     new SuccessResponse({
       metadata: await userService.delete(req.params),
+    }).send(res);
+  }
+
+  async register(req, res, ___) {
+    new Created({
+      metadata: await userService.register(req.body),
+    }).send(res);
+  }
+
+  async login(req, res, ___) {
+    new SuccessResponse({
+      metadata: await userService.login(res, req.body),
+    }).send(res);
+  }
+
+  async renewToken(req, res, ___) {
+    new SuccessResponse({
+      metadata: await userService.renewToken(req.body),
     }).send(res);
   }
 }
