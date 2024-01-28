@@ -32,6 +32,15 @@ class NotFoundError extends ErrorResponse {
     super(message, statusCode);
   }
 }
+
+class UnauthorizedError extends ErrorResponse {
+  constructor(
+    message = ReasonPhrases.UNAUTHORIZED,
+    statusCode = StatusCodes.UNAUTHORIZED
+  ) {
+    super(message, statusCode);
+  }
+}
 class InternalServerError extends ErrorResponse {
   constructor(
     message = ReasonPhrases.INTERNAL_SERVER_ERROR,
@@ -44,4 +53,5 @@ module.exports = {
   BadRequestRequestError,
   InternalServerError,
   NotFoundError,
+  UnauthorizedError,
 };

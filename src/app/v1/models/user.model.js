@@ -35,8 +35,16 @@ module.exports = {
   },
 
   getUserById: async (query, data) => {
-    const result = await knexInstance("user").select(data).where(query);
+    const result = await knexInstance("user").select(data).where(query).first();
     return result;
+  },
+
+  checkExists: async (query) => {
+    const result = await knexInstance("user")
+      .where(query)
+      .select(knexInstance.raw("1"))
+      .first();
+    return !!result;
   },
 
   getAllUser: async (data) => {

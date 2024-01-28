@@ -11,6 +11,8 @@ const dev = {
     node: process.env.NODE_ENV || NODE_ENV.DEV,
     web_server: process.env.WEB_SERVER,
     log: process.env.LOG_LEVEL,
+    accessKey: process.env.ACCESS_TOKEN_SECRET,
+    refetchKey: process.env.REFRESH_TOKEN_SECRET,
   },
 };
 const pro = {
@@ -20,6 +22,8 @@ const pro = {
     node: process.env.NODE_ENV || NODE_ENV.DEV,
     web_server: process.env.WEB_SERVER,
     log: process.env.LOG_LEVEL,
+    accessKey: process.env.ACCESS_TOKEN_SECRET,
+    refetchKey: process.env.REFRESH_TOKEN_SECRET,
   },
 };
 const config = { dev, pro };

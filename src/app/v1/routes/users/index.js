@@ -4,8 +4,19 @@ const express = require("express");
 //* IMPORT
 const userController = require("../../controllers/user.controller");
 const { asyncHandler } = require("../../../../commons/helpers/asyncHandler");
+const {
+  checkAuthorizationAccessToken,
+} = require("../../../../auth/check.auth");
 
 const router = express.Router();
+
+router.post("/login", asyncHandler(userController.login));
+
+router.post("/register", asyncHandler(userController.register));
+
+router.post("/renewToken", asyncHandler(userController.renewToken));
+
+router.use(checkAuthorizationAccessToken);
 
 router.get("/get/all", asyncHandler(userController.getAll));
 
