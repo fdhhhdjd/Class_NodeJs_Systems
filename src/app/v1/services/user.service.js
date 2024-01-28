@@ -28,6 +28,7 @@ class UserService {
       username: "username",
       email: "email",
       password: "password",
+      refetch_token: "refetch_token",
     };
     console.info({
       "User Info": req.userInfo,
@@ -189,6 +190,26 @@ class UserService {
 
     if (checkEmptyToken) {
       throw new BadRequestRequestError();
+    }
+
+    if (isEmail) {
+      userModel.updateUser(
+        {
+          refetch_token: resultRefetchToken,
+        },
+        {
+          email: email_or_username,
+        }
+      );
+    } else {
+      userModel.updateUser(
+        {
+          refetch_token: resultRefetchToken,
+        },
+        {
+          username: email_or_username,
+        }
+      );
     }
 
     createCookie(res, RefetchToken, resultRefetchToken);
