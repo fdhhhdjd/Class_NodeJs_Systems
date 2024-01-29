@@ -40,7 +40,7 @@ require("./databases/init.knex");
 require("./databases/init.redis");
 
 //* V1
-app.use("/api", require("./app/v1/routes"));
+app.use("/api/v1", require("./app/v1/routes"));
 
 app.use((_, __, next) => {
   next(new NotFoundError());

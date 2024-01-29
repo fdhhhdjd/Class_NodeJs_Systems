@@ -13,11 +13,11 @@ const { User } = require("../../../commons/keys/user");
 
 const router = express.Router();
 
-router.use("/v1/users", require("./users"));
-router.use("/v1/todos", require("./todos"));
-router.use("/v1/labels", require("./labels"));
+router.use("/users", require("./users"));
+router.use("/todos", require("./todos"));
+router.use("/labels", require("./labels"));
 
-router.get("/v1", async (_, res, __) => {
+router.get("/", async (_, res, __) => {
   const resultProfileUser = await redisInstance.hgetall(User);
   const healthCheck = {
     uptime: process.uptime(),
