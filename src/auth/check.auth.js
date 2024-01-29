@@ -8,27 +8,33 @@ const {
   app: { accessKey },
 } = require("../commons/configs/app.config");
 const { TOKEN_EXPIRE, INVALID_TOKEN } = require("../commons/constants");
+const { isTokenBlacklisted } = require("./auth.blacklist");
 
 const checkAuthorizationAccessToken = async (req, __, next) => {
   try {
-    const token = req.headers?.authorization?.split(" ")[1];
-    const isTokenEmpty = _.isEmpty(token);
+    const accessToken = req.headers?.authorization?.split(" ")[1];
+    const refetchToken = req?.cookies?.refresh_token;
 
-    if (isTokenEmpty) {
+    if (_.isEmpty(accessToken) || _.isEmpty(refetchToken)) {
       next(new UnauthorizedError());
     }
 
-    const infoToken = await verifyTokenJWT(token, accessKey);
+    const infoToken = await verifyTokenJWT(accessToken, accessKey);
 
     const checkToken = [TOKEN_EXPIRE, INVALID_TOKEN].includes(infoToken);
 
     if (checkToken) {
-      req.accessToken = token;
       next(new UnauthorizedError());
     }
 
+    const isBlacklisted = await isTokenBlacklisted(refetchToken);
+
+    if (isBlacklisted) {
+      next(new UnauthorizedError("Token is not blacklisted"));
+    }
+
     req.userInfo = infoToken;
-    req.accessToken = token;
+    req.accessToken = accessToken;
 
     next();
   } catch (error) {

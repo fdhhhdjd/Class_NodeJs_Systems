@@ -1,6 +1,7 @@
 //* LIB
 const express = require("express");
 const morgan = require("morgan");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const { default: helmet } = require("helmet");
 const compression = require("compression");
@@ -20,6 +21,7 @@ dotenv.config();
 app.use(cors());
 app.use(express.json());
 app.use(morgan(morganConfig));
+app.use(cookieParser());
 app.use(helmet());
 app.use(compression());
 app.use(

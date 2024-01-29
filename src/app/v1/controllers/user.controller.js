@@ -52,8 +52,16 @@ class UserController {
   }
 
   async renewToken(req, res, ___) {
+    const refetchToken = req?.cookies?.refresh_token;
     new SuccessResponse({
-      metadata: await userService.renewToken(req.body),
+      metadata: await userService.renewToken({ refetchToken }, req.body),
+    }).send(res);
+  }
+
+  async logout(req, res, ___) {
+    const refetchToken = req?.cookies?.refresh_token;
+    new SuccessResponse({
+      metadata: await userService.logout(res, { refetchToken }),
     }).send(res);
   }
 }

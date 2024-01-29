@@ -14,13 +14,19 @@ const { createTokenJWT, verifyTokenJWT } = require("../../../auth/auth.token");
 const {
   app: { accessKey, refetchKey },
 } = require("../../../commons/configs/app.config");
-const { TIME_TOKEN, TOKEN_EXPIRE } = require("../../../commons/constants");
+const {
+  TIME_TOKEN,
+  TOKEN_EXPIRE,
+  INVALID_TOKEN,
+} = require("../../../commons/constants");
 const { createCookie } = require("../../../auth/auth.cookie");
 const { RefetchToken } = require("../../../commons/keys/token");
 const {
   encodePassword,
   comparePassword,
 } = require("../../../auth/auth.password");
+const redisInstance = require("../../../databases/init.redis");
+const { BlacklistTokens } = require("../../../commons/keys/blacklist");
 class UserService {
   async getAll(req) {
     const data = {
@@ -219,22 +225,72 @@ class UserService {
     return userInfo;
   }
 
-  async renewToken({ accessToken }) {
-    const isTokenEmpty = _.isEmpty(accessToken);
-
-    if (isTokenEmpty) {
-      new NotFoundError();
-    }
-
-    const infoToken = await verifyTokenJWT(accessToken, accessKey);
-
-    const checkToken = [TOKEN_EXPIRE].includes(infoToken);
-
-    if (!checkToken) {
+  async renewToken({ refetchToken }, { accessToken }) {
+    if (_.isEmpty(accessToken) || _.isEmpty(refetchToken)) {
       throw new NotFoundError();
     }
 
-    return checkToken;
+    const infoTokenAccess = await verifyTokenJWT(accessToken, accessKey);
+
+    const checkAccessToken = [TOKEN_EXPIRE].includes(infoTokenAccess);
+
+    if (!checkAccessToken) {
+      throw new NotFoundError();
+    }
+
+    const infoRefetchToken = await verifyTokenJWT(refetchToken, refetchKey);
+
+    const checkRefetchToken = [TOKEN_EXPIRE, INVALID_TOKEN].includes(
+      infoTokenAccess
+    );
+
+    if (!checkRefetchToken) {
+      throw new NotFoundError();
+    }
+    const dataInfo = ["id", "username", "email", "role"];
+
+    const userInfo = await userModel.getUserById(
+      { id: infoRefetchToken.id },
+      dataInfo
+    );
+
+    const resultAccessToken = createTokenJWT(
+      userInfo,
+      accessKey,
+      TIME_TOKEN.ACCESS
+    );
+
+    const checkEmptyToken = _.isEmpty(resultAccessToken);
+
+    if (checkEmptyToken) {
+      throw new BadRequestRequestError();
+    }
+
+    userInfo.accessToken = resultAccessToken;
+
+    return userInfo;
+  }
+
+  async logout(res, { refetchToken }) {
+    if (_.isEmpty(refetchToken)) {
+      throw new NotFoundError();
+    }
+
+    const infoRefetchToken = await verifyTokenJWT(refetchToken, refetchKey);
+
+    const checkRefetchToken = [TOKEN_EXPIRE, INVALID_TOKEN].includes(
+      infoRefetchToken
+    );
+
+    if (checkRefetchToken) {
+      throw new NotFoundError();
+    }
+
+    redisInstance.lpush(BlacklistTokens, refetchToken);
+
+    res.clearCookie(RefetchToken);
+
+    return infoRefetchToken;
   }
 }
 

@@ -18,6 +18,8 @@ router.post("/renewToken", asyncHandler(userController.renewToken));
 
 router.use(checkAuthorizationAccessToken);
 
+router.get("/logout", asyncHandler(userController.logout));
+
 router.get("/get/all", asyncHandler(userController.getAll));
 
 router.get("/get/:userId", asyncHandler(userController.getDetail));
