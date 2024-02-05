@@ -9,6 +9,7 @@ const {
   UnauthorizedError,
 } = require("../../../cores/error.response");
 const userModel = require("../models/user.model");
+const userVerificationModel = require("../models/user_verification");
 const { createTokenJWT, verifyTokenJWT } = require("../../../auth/auth.token");
 
 const {
@@ -18,6 +19,7 @@ const {
   TIME_TOKEN,
   TOKEN_EXPIRE,
   INVALID_TOKEN,
+  TIME,
 } = require("../../../commons/constants");
 const { createCookie } = require("../../../auth/auth.cookie");
 const { RefetchToken } = require("../../../commons/keys/token");
@@ -27,7 +29,9 @@ const {
 } = require("../../../auth/auth.password");
 const redisInstance = require("../../../databases/init.redis");
 const { BlacklistTokens } = require("../../../commons/keys/blacklist");
-const { generateRandomPassword } = require("../../../commons/utils/random");
+const { generateRandomString } = require("../../../commons/utils/random");
+const { checkUserSpam } = require("../../../auth/auth.blacklist");
+const { SpamForget } = require("../../../commons/keys/spam");
 class UserService {
   async getAll(req) {
     const data = {
@@ -72,8 +76,7 @@ class UserService {
   }
 
   async create({ username, email }) {
-    const randomPassword = generateRandomPassword(20);
-    console.log(randomPassword);
+    const randomPassword = generateRandomString(10);
     const hashPassword = await encodePassword(randomPassword);
 
     if (!hashPassword) {
@@ -317,8 +320,7 @@ class UserService {
     const dataInfo = ["id", "refetch_token"];
 
     const userInfo = await userModel.getUserById({ id: userId }, dataInfo);
-
-    if (!userInfo) {
+    if (_.isEmpty(userInfo)) {
       throw new NotFoundError();
     }
 
@@ -351,6 +353,44 @@ class UserService {
     redisInstance.lpush(BlacklistTokens, userInfo.refetch_token);
 
     return userInfo;
+  }
+
+  async forgetPassword({ email }) {
+    const result = await checkUserSpam({
+      key: SpamForget,
+      blockDuration: TIME._1_MINUTE,
+      delDuration: TIME._3_MINUTE,
+      maxRequest: 3,
+    });
+
+    if (result === true) {
+      if (_.isEmpty(email)) {
+        throw new NotFoundError();
+      }
+
+      const userInfo = await userModel.getUserById({ email }, ["id"]);
+
+      if (_.isEmpty(userInfo)) {
+        throw new BadRequestRequestError();
+      }
+
+      const uniqueString = generateRandomString(30);
+
+      if (_.isEmpty(uniqueString)) {
+        throw new BadRequestRequestError();
+      }
+
+      const _2_minutes = new Date(Date.now() + 2 * 60 * 1000);
+
+      userVerificationModel.createUserVerification({
+        user_id: userInfo.id,
+        unique_string: uniqueString,
+        expires_at: _2_minutes,
+      });
+
+      return uniqueString;
+    }
+    throw new BadRequestRequestError(result);
   }
 }
 

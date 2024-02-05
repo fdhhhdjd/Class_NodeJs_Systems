@@ -70,6 +70,12 @@ class UserController {
       metadata: await userService.blockRefetchToken(req.body),
     }).send(res);
   }
+
+  async forgetPassword(req, res, ___) {
+    new SuccessResponse({
+      metadata: await userService.forgetPassword(req.body),
+    }).send(res);
+  }
 }
 
 module.exports = new UserController();

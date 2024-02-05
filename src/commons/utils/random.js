@@ -3,7 +3,7 @@ const {
   app: { radomPassword },
 } = require("../../commons/configs/app.config");
 
-const generateRandomPassword = (length = 20) => {
+const generateRandomString = (length = 10) => {
   const charsetLength = radomPassword.length;
 
   const password = Array.from({ length }, () =>
@@ -13,4 +13,4 @@ const generateRandomPassword = (length = 20) => {
   return password;
 };
 
-module.exports = { generateRandomPassword };
+module.exports = { generateRandomString };

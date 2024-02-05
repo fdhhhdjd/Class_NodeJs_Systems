@@ -17,6 +17,8 @@ router.post("/register", asyncHandler(userController.register));
 
 router.post("/renewToken", asyncHandler(userController.renewToken));
 
+router.post("/forget", asyncHandler(userController.forgetPassword));
+
 router.use(checkAuthorizationAccessToken);
 
 router.get("/logout", asyncHandler(userController.logout));

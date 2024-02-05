@@ -16,6 +16,11 @@ const TIME_COOKIE = {
   _7_DAY: 7 * 24 * 60 * 60 * 1000,
 };
 
+const TIME = {
+  _1_MINUTE: 60,
+  _3_MINUTE: 3 * 60,
+};
+
 const TOKEN_EXPIRE = "jwt expired";
 const INVALID_TOKEN = "invalid token";
 
@@ -35,4 +40,5 @@ module.exports = {
   INVALID_TOKEN,
   SALT_ROUNDS,
   ROLE,
+  TIME,
 };

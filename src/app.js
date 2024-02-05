@@ -39,6 +39,9 @@ app.use(
 require("./databases/init.knex");
 require("./databases/init.redis");
 
+//* CRON
+require("./crons/user_verification");
+
 //* V1
 app.use("/api/v1", require("./app/v1/routes"));
 
