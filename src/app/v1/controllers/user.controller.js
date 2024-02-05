@@ -73,7 +73,7 @@ class UserController {
 
   async forgetPassword(req, res, ___) {
     new SuccessResponse({
-      metadata: await userService.forgetPassword(req.body),
+      metadata: await userService.forgetPassword(req, req.body),
     }).send(res);
   }
 }

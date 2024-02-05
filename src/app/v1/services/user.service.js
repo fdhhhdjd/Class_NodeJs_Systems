@@ -1,6 +1,7 @@
 //* LIB
 const _ = require("lodash");
 const validator = require("validator");
+const path = require("path");
 
 //* IMPORT
 const {
@@ -32,6 +33,7 @@ const { BlacklistTokens } = require("../../../commons/keys/blacklist");
 const { generateRandomString } = require("../../../commons/utils/random");
 const { checkUserSpam } = require("../../../auth/auth.blacklist");
 const { SpamForget } = require("../../../commons/keys/spam");
+const sendEmail = require("../../../commons/utils/sendEmail");
 class UserService {
   async getAll(req) {
     const data = {
@@ -355,7 +357,7 @@ class UserService {
     return userInfo;
   }
 
-  async forgetPassword({ email }) {
+  async forgetPassword(req, { email }) {
     const result = await checkUserSpam({
       key: SpamForget,
       blockDuration: TIME._1_MINUTE,
@@ -368,7 +370,10 @@ class UserService {
         throw new NotFoundError();
       }
 
-      const userInfo = await userModel.getUserById({ email }, ["id"]);
+      const userInfo = await userModel.getUserById({ email }, [
+        "id",
+        "username",
+      ]);
 
       if (_.isEmpty(userInfo)) {
         throw new BadRequestRequestError();
@@ -388,7 +393,30 @@ class UserService {
         expires_at: _2_minutes,
       });
 
-      return uniqueString;
+      const resetPasswordUrl = `${req.protocol}://${req.get(
+        "host"
+      )}/user/password/reset/${uniqueString}`;
+
+      if (resetPasswordUrl) {
+        sendEmail({
+          to: email,
+          subject: `Forgot Password`,
+          template: "forgotPassword",
+          attachments: [
+            {
+              filename: "logo.png",
+              path: path.resolve("./src/views", "images", "logo.png"),
+              cid: "logoTai",
+            },
+          ],
+          context: {
+            username: userInfo.username,
+            resetPasswordUrl,
+          },
+        });
+      }
+
+      return resetPasswordUrl;
     }
     throw new BadRequestRequestError(result);
   }

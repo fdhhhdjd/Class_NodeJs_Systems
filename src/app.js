@@ -56,4 +56,5 @@ app.use((error, __, res, ____) => {
 
   return res.status(resultError?.response.status).json(resultError?.response);
 });
+
 module.exports = app;
