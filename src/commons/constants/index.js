@@ -21,6 +21,11 @@ const INVALID_TOKEN = "invalid token";
 
 const SALT_ROUNDS = 10;
 
+const ROLE = {
+  CUSTOMER: 10,
+  ADMIN: 20,
+};
+
 module.exports = {
   NODE_ENV,
   LIMIT_BODY,
@@ -29,4 +34,5 @@ module.exports = {
   TOKEN_EXPIRE,
   INVALID_TOKEN,
   SALT_ROUNDS,
+  ROLE,
 };

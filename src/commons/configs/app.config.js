@@ -13,6 +13,7 @@ const dev = {
     log: process.env.LOG_LEVEL,
     accessKey: process.env.ACCESS_TOKEN_SECRET,
     refetchKey: process.env.REFRESH_TOKEN_SECRET,
+    radomPassword: process.env.RANDOM_PASSWORD,
   },
 };
 const pro = {
@@ -24,6 +25,7 @@ const pro = {
     log: process.env.LOG_LEVEL,
     accessKey: process.env.ACCESS_TOKEN_SECRET,
     refetchKey: process.env.REFRESH_TOKEN_SECRET,
+    radomPassword: process.env.RANDOM_PASSWORD,
   },
 };
 const config = { dev, pro };

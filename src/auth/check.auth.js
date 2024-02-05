@@ -7,7 +7,7 @@ const { verifyTokenJWT } = require("./auth.token");
 const {
   app: { accessKey },
 } = require("../commons/configs/app.config");
-const { TOKEN_EXPIRE, INVALID_TOKEN } = require("../commons/constants");
+const { TOKEN_EXPIRE, INVALID_TOKEN, ROLE } = require("../commons/constants");
 const { isTokenBlacklisted } = require("./auth.blacklist");
 
 const checkAuthorizationAccessToken = async (req, __, next) => {
@@ -42,6 +42,14 @@ const checkAuthorizationAccessToken = async (req, __, next) => {
   }
 };
 
+const checkRoleAdmin = async (req, __, next) => {
+  if (req.userInfo.role !== ROLE.ADMIN) {
+    next(new UnauthorizedError());
+  }
+  next();
+};
+
 module.exports = {
   checkAuthorizationAccessToken,
+  checkRoleAdmin,
 };

@@ -6,6 +6,7 @@ const userController = require("../../controllers/user.controller");
 const { asyncHandler } = require("../../../../commons/helpers/asyncHandler");
 const {
   checkAuthorizationAccessToken,
+  checkRoleAdmin,
 } = require("../../../../auth/check.auth");
 
 const router = express.Router();
@@ -31,5 +32,9 @@ router.post("/create", asyncHandler(userController.create));
 router.patch("/update/:userId", asyncHandler(userController.update));
 
 router.delete("/delete/:userId", asyncHandler(userController.delete));
+
+router.use(checkRoleAdmin);
+
+router.post("/block", asyncHandler(userController.blockRefetchToken));
 
 module.exports = router;

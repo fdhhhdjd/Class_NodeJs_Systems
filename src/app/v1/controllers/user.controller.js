@@ -64,6 +64,12 @@ class UserController {
       metadata: await userService.logout(res, { refetchToken }),
     }).send(res);
   }
+
+  async blockRefetchToken(req, res, ___) {
+    new SuccessResponse({
+      metadata: await userService.blockRefetchToken(req.body),
+    }).send(res);
+  }
 }
 
 module.exports = new UserController();

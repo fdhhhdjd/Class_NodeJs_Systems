@@ -27,6 +27,7 @@ const {
 } = require("../../../auth/auth.password");
 const redisInstance = require("../../../databases/init.redis");
 const { BlacklistTokens } = require("../../../commons/keys/blacklist");
+const { generateRandomPassword } = require("../../../commons/utils/random");
 class UserService {
   async getAll(req) {
     const data = {
@@ -70,8 +71,20 @@ class UserService {
     return result;
   }
 
-  async create({ username, email, password }) {
-    const result = await userModel.createUser({ username, email, password });
+  async create({ username, email }) {
+    const randomPassword = generateRandomPassword(20);
+    console.log(randomPassword);
+    const hashPassword = await encodePassword(randomPassword);
+
+    if (!hashPassword) {
+      throw new BadRequestRequestError();
+    }
+
+    const result = await userModel.createUser({
+      username,
+      email,
+      password: hashPassword,
+    });
     return result;
   }
 
@@ -180,8 +193,11 @@ class UserService {
       throw new UnauthorizedError();
     }
 
+    // Remove Token accessToken
+    const { password: userPassword, ...userInfoWithoutPassword } = userInfo;
+
     const resultAccessToken = createTokenJWT(
-      userInfo,
+      userInfoWithoutPassword,
       accessKey,
       TIME_TOKEN.ACCESS
     );
@@ -291,6 +307,50 @@ class UserService {
     res.clearCookie(RefetchToken);
 
     return infoRefetchToken;
+  }
+
+  async blockRefetchToken({ userId }) {
+    if (_.isEmpty(userId)) {
+      throw new NotFoundError();
+    }
+
+    const dataInfo = ["id", "refetch_token"];
+
+    const userInfo = await userModel.getUserById({ id: userId }, dataInfo);
+
+    if (!userInfo) {
+      throw new NotFoundError();
+    }
+
+    const infoRefetchToken = await verifyTokenJWT(
+      userInfo.refetch_token,
+      refetchKey
+    );
+
+    const checkRefetchToken = [TOKEN_EXPIRE, INVALID_TOKEN].includes(
+      infoRefetchToken
+    );
+
+    if (checkRefetchToken) {
+      throw new NotFoundError();
+    }
+
+    const [start, end] = [0, -1];
+
+    const blacklistTokens = await redisInstance.lrange(
+      BlacklistTokens,
+      start,
+      end
+    );
+    const isTokenInBlacklist = blacklistTokens.includes(userInfo.refetch_token);
+
+    if (isTokenInBlacklist) {
+      return userInfo;
+    }
+
+    redisInstance.lpush(BlacklistTokens, userInfo.refetch_token);
+
+    return userInfo;
   }
 }
 
