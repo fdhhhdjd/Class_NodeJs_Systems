@@ -38,6 +38,7 @@ app.use(
 //* Database & Cache
 require("./databases/init.knex");
 require("./databases/init.redis");
+require("./databases/init.cloudinary");
 
 //* CRON
 require("./crons/user_verification");
