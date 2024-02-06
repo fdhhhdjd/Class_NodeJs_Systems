@@ -44,6 +44,8 @@ require("./crons/user_verification");
 
 //* V1
 app.use("/api/v1", require("./app/v1/routes"));
+//* V2
+app.use("/api/v2", require("./app/v2/routes"));
 
 app.use((_, __, next) => {
   next(new NotFoundError());
