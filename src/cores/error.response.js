@@ -41,6 +41,13 @@ class UnauthorizedError extends ErrorResponse {
     super(message, statusCode);
   }
 }
+
+class GoneError extends ErrorResponse {
+  constructor(message = ReasonPhrases.GONE, statusCode = StatusCodes.GONE) {
+    super(message, statusCode);
+  }
+}
+
 class InternalServerError extends ErrorResponse {
   constructor(
     message = ReasonPhrases.INTERNAL_SERVER_ERROR,
@@ -54,4 +61,5 @@ module.exports = {
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
+  GoneError,
 };

@@ -47,6 +47,15 @@ module.exports = {
     return !!result;
   },
 
+  checkExitUserNameAndEmail: async ({ username, email }) => {
+    const result = await knexInstance("user")
+      .where({ username })
+      .orWhere({ email })
+      .select(knexInstance.raw("1"))
+      .first();
+    return !!result;
+  },
+
   getAllUser: async (data) => {
     const result = await knexInstance("user")
       .select(data)

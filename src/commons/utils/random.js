@@ -1,3 +1,6 @@
+//* LIB
+const crypto = require("crypto");
+
 //* IMPORT
 const {
   app: { radomPassword },
@@ -12,5 +15,16 @@ const generateRandomString = (length = 10) => {
 
   return password;
 };
+const generateRandomLink = (length) => {
+  return new Promise((resolve, reject) => {
+    crypto.randomBytes(length, (ex, buf) => {
+      if (ex) {
+        reject(ex);
+      } else {
+        resolve(buf.toString("hex"));
+      }
+    });
+  });
+};
 
-module.exports = { generateRandomString };
+module.exports = { generateRandomString, generateRandomLink };

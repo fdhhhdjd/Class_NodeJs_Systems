@@ -8,6 +8,7 @@ const {
   BadRequestRequestError,
   NotFoundError,
   UnauthorizedError,
+  GoneError,
 } = require("../../../cores/error.response");
 const userModel = require("../models/user.model");
 const userVerificationModel = require("../models/user_verification");
@@ -30,7 +31,10 @@ const {
 } = require("../../../auth/auth.password");
 const redisInstance = require("../../../databases/init.redis");
 const { BlacklistTokens } = require("../../../commons/keys/blacklist");
-const { generateRandomString } = require("../../../commons/utils/random");
+const {
+  generateRandomString,
+  generateRandomLink,
+} = require("../../../commons/utils/random");
 const { checkUserSpam } = require("../../../auth/auth.blacklist");
 const { SpamForget } = require("../../../commons/keys/spam");
 const sendEmail = require("../../../commons/utils/sendEmail");
@@ -53,16 +57,27 @@ class UserService {
   }
 
   async getDetail({ userId }) {
+    if (_.isEmpty(userId)) {
+      throw new BadRequestRequestError();
+    }
     const data = {
       id: "id",
       username: "username",
       email: "email",
     };
     const result = await userModel.getUserById({ id: userId }, data);
+
+    if (_.isEmpty(result)) {
+      throw new BadRequestRequestError();
+    }
     return result;
   }
 
   async getTodoFollowUser({ userId }) {
+    if (_.isEmpty(userId)) {
+      throw new BadRequestRequestError();
+    }
+
     const data = {
       id: "todo_list.id",
       title: "todo_list.title",
@@ -78,6 +93,20 @@ class UserService {
   }
 
   async create({ username, email }) {
+    const shouldEmpty = _.isEmpty(username) || _.isEmpty(email);
+    if (shouldEmpty) {
+      throw new BadRequestRequestError();
+    }
+
+    const foundUser = await userModel.checkExitUserNameAndEmail({
+      username,
+      email,
+    });
+
+    if (foundUser) {
+      throw new BadRequestRequestError();
+    }
+
     const randomPassword = generateRandomString(10);
     const hashPassword = await encodePassword(randomPassword);
 
@@ -94,14 +123,68 @@ class UserService {
   }
 
   async update({ username, email, password }, { userId }) {
+    const shouldEmpty =
+      _.isEmpty(username) ||
+      _.isEmpty(email) ||
+      _.isEmpty(password) ||
+      _.isEmpty(userId);
+    if (shouldEmpty) {
+      throw new BadRequestRequestError();
+    }
+
+    const foundUser = await userModel.checkExists({
+      id: userId,
+    });
+
+    if (!foundUser) {
+      throw new UnauthorizedError();
+    }
+
+    const duplicateUser = await userModel.checkExitUserNameAndEmail({
+      username,
+      email,
+    });
+
+    if (duplicateUser) {
+      throw new BadRequestRequestError();
+    }
+
+    if (
+      !validator.isStrongPassword(password, {
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minSymbols: 1,
+      })
+    ) {
+      throw new UnauthorizedError();
+    }
+
+    const hashPassword = await encodePassword(password);
+
+    if (!hashPassword) {
+      throw new BadRequestRequestError();
+    }
     const result = await userModel.updateUser(
-      { username, email, password },
+      { username, email, password: hashPassword },
       { id: userId }
     );
     return result;
   }
 
   async delete({ userId }) {
+    if (_.isEmpty(userId)) {
+      throw new BadRequestRequestError();
+    }
+
+    const foundUser = await userModel.checkExists({
+      id: userId,
+    });
+
+    if (!foundUser) {
+      throw new UnauthorizedError();
+    }
+
     const result = await userModel.deleteId({ id: userId });
     return result;
   }
@@ -128,17 +211,13 @@ class UserService {
       throw new UnauthorizedError();
     }
 
-    const foundUser = await userModel.checkExists(
-      {
-        email,
-      },
-      {
-        id: "id",
-      }
-    );
+    const foundUser = await userModel.checkExitUserNameAndEmail({
+      username,
+      email,
+    });
 
     if (foundUser) {
-      throw new UnauthorizedError();
+      throw new BadRequestRequestError();
     }
 
     const hashPassword = await encodePassword(password);
@@ -367,7 +446,7 @@ class UserService {
 
     if (result === true) {
       if (_.isEmpty(email)) {
-        throw new NotFoundError();
+        throw new BadRequestRequestError();
       }
 
       const userInfo = await userModel.getUserById({ email }, [
@@ -379,18 +458,18 @@ class UserService {
         throw new BadRequestRequestError();
       }
 
-      const uniqueString = generateRandomString(30);
+      const uniqueString = await generateRandomLink(20);
 
       if (_.isEmpty(uniqueString)) {
         throw new BadRequestRequestError();
       }
 
-      const _2_minutes = new Date(Date.now() + 2 * 60 * 1000);
+      const _15_minutes = new Date(Date.now() + 15 * 60 * 1000);
 
       userVerificationModel.createUserVerification({
         user_id: userInfo.id,
         unique_string: uniqueString,
-        expires_at: _2_minutes,
+        expires_at: _15_minutes,
       });
 
       const resetPasswordUrl = `${req.protocol}://${req.get(
@@ -419,6 +498,120 @@ class UserService {
       return resetPasswordUrl;
     }
     throw new BadRequestRequestError(result);
+  }
+
+  async resetPassword({ uniqueString }, { password }) {
+    const resultInfo = await userVerificationModel.getUserVerificationById(
+      {
+        unique_string: uniqueString,
+      },
+      ["user_id", "expires_at"]
+    );
+
+    if (_.isEmpty(resultInfo)) {
+      throw new BadRequestRequestError();
+    }
+
+    const hadExpired = resultInfo.expires_at <= new Date();
+    if (hadExpired) {
+      throw new GoneError();
+    }
+
+    const userInfo = await userModel.getUserById({ id: resultInfo.user_id }, [
+      "username",
+      "email",
+    ]);
+
+    if (_.isEmpty(userInfo)) {
+      throw new BadRequestRequestError();
+    }
+
+    if (
+      !validator.isStrongPassword(password, {
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minSymbols: 1,
+      })
+    ) {
+      throw new UnauthorizedError();
+    }
+
+    const hashPassword = await encodePassword(password);
+
+    if (!hashPassword) {
+      throw new BadRequestRequestError();
+    }
+
+    const updateUserPromise = userModel.updateUser(
+      { password: hashPassword },
+      { id: resultInfo.user_id }
+    );
+
+    const deleteIdPromise = userVerificationModel.deleteId({
+      user_id: resultInfo.user_id,
+    });
+
+    Promise.all([updateUserPromise, deleteIdPromise]);
+
+    sendEmail({
+      to: userInfo.email,
+      subject: `Reset ThankYou!`,
+      template: "resetThankYou",
+      context: {
+        username: userInfo.username,
+      },
+    });
+
+    return resultInfo;
+  }
+
+  async changePassword({ id, username, email }, { password }) {
+    if (_.isEmpty(id) || _.isEmpty(password)) {
+      throw new BadRequestRequestError();
+    }
+
+    const foundUser = await userModel.checkExists({
+      id,
+    });
+
+    if (!foundUser) {
+      throw new UnauthorizedError();
+    }
+
+    if (
+      !validator.isStrongPassword(password, {
+        minLength: 8,
+        minLowercase: 1,
+        minUppercase: 1,
+        minSymbols: 1,
+      })
+    ) {
+      throw new UnauthorizedError();
+    }
+
+    const hashPassword = await encodePassword(password);
+
+    if (!hashPassword) {
+      throw new BadRequestRequestError();
+    }
+
+    userModel.updateUser({ password: hashPassword }, { id });
+
+    sendEmail({
+      to: email,
+      subject: `Change Password Thank You!`,
+      template: "changePasswordThankYou",
+      context: {
+        username,
+      },
+    });
+
+    return id;
+  }
+
+  async acceptResetLogin(res, { refetchToken }) {
+    return await this.logout(res, { refetchToken });
   }
 }
 

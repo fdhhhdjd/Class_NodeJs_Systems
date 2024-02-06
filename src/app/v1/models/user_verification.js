@@ -30,4 +30,20 @@ module.exports = {
         reject(error);
       }
     }),
+
+  deleteId: async (query) => {
+    const result = knexInstance("user_verification")
+      .del()
+      .where(query)
+      .returning(["id"]);
+    return result;
+  },
+
+  getUserVerificationById: async (query, data) => {
+    const result = await knexInstance("user_verification")
+      .select(data)
+      .where(query)
+      .first();
+    return result;
+  },
 };

@@ -76,6 +76,25 @@ class UserController {
       metadata: await userService.forgetPassword(req, req.body),
     }).send(res);
   }
+
+  async resetPassword(req, res, ___) {
+    new SuccessResponse({
+      metadata: await userService.resetPassword(req.params, req.body),
+    }).send(res);
+  }
+
+  async changePassword(req, res, ___) {
+    new SuccessResponse({
+      metadata: await userService.changePassword(req.userInfo, req.body),
+    }).send(res);
+  }
+
+  async acceptResetLogin(req, res, ___) {
+    const refetchToken = req?.cookies?.refresh_token;
+    new SuccessResponse({
+      metadata: await userService.acceptResetLogin(res, { refetchToken }),
+    }).send(res);
+  }
 }
 
 module.exports = new UserController();
