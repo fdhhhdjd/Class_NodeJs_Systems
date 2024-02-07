@@ -39,6 +39,7 @@ app.use(
 require("./databases/init.knex");
 require("./databases/init.redis");
 require("./databases/init.cloudinary");
+require("./databases/init.firebase");
 
 //* CRON
 require("./crons/user_verification");

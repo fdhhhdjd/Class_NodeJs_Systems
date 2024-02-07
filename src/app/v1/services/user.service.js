@@ -38,6 +38,7 @@ const {
 const { checkUserSpam } = require("../../../auth/auth.blacklist");
 const { SpamForget } = require("../../../commons/keys/spam");
 const sendEmail = require("../../../commons/utils/sendEmail");
+const { formatPhone } = require("../../../commons/utils/convert");
 class UserService {
   async getAll(req) {
     const data = {
@@ -46,6 +47,7 @@ class UserService {
       email: "email",
       password: "password",
       refetch_token: "refetch_token",
+      phone: "phone",
     };
     console.info({
       "User Info": req.userInfo,
@@ -122,54 +124,75 @@ class UserService {
     return result;
   }
 
-  async update({ username, email, password }, { userId }) {
-    const shouldEmpty =
-      _.isEmpty(username) ||
-      _.isEmpty(email) ||
-      _.isEmpty(password) ||
-      _.isEmpty(userId);
-    if (shouldEmpty) {
-      throw new BadRequestRequestError();
+  async update({ username, email, password, phone }, { userId }) {
+    const updateFields = {};
+
+    if (username !== undefined) {
+      if (validator.isEmpty(username)) {
+        throw new BadRequestRequestError("Username is required");
+      }
+      updateFields.username = username;
     }
 
-    const foundUser = await userModel.checkExists({
-      id: userId,
-    });
-
-    if (!foundUser) {
-      throw new UnauthorizedError();
+    if (email !== undefined) {
+      if (validator.isEmpty(email)) {
+        throw new BadRequestRequestError("Email is required");
+      }
+      updateFields.email = email;
     }
 
-    const duplicateUser = await userModel.checkExitUserNameAndEmail({
-      username,
-      email,
-    });
-
-    if (duplicateUser) {
-      throw new BadRequestRequestError();
+    if (password !== undefined) {
+      if (
+        !validator.isStrongPassword(password, {
+          minLength: 8,
+          minLowercase: 1,
+          minUppercase: 1,
+          minSymbols: 1,
+        })
+      ) {
+        throw new UnauthorizedError("Password is not strong enough");
+      }
+      const hashPassword = await encodePassword(password);
+      if (!hashPassword) {
+        throw new BadRequestRequestError("Error hashing password");
+      }
+      updateFields.password = hashPassword;
     }
 
-    if (
-      !validator.isStrongPassword(password, {
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minSymbols: 1,
-      })
-    ) {
-      throw new UnauthorizedError();
+    if (phone !== undefined) {
+      if (validator.isEmpty(phone)) {
+        throw new BadRequestRequestError("Phone number is required");
+      }
+      if (!validator.isNumeric(phone)) {
+        throw new BadRequestRequestError("Phone number must be numeric");
+      }
+      if (!validator.isLength(phone, { min: 10, max: 11 })) {
+        throw new BadRequestRequestError(
+          "Phone number must be between 10 and 11 digits"
+        );
+      }
+      if (!/^(0\d{9}|84\d{9})$/.test(phone)) {
+        throw new BadRequestRequestError("Phone number must be Vietnamese");
+      }
+      const formattedPhone = formatPhone(phone);
+      updateFields.phone = formattedPhone;
     }
 
-    const hashPassword = await encodePassword(password);
+    if (Object.keys(updateFields).length !== 0) {
+      updateFields.userId = userId;
+      const duplicateUser = await userModel.checkExitUserNameAndEmail(
+        updateFields
+      );
+      if (duplicateUser) {
+        throw new BadRequestRequestError(
+          "Username or email or phone already exists"
+        );
+      }
 
-    if (!hashPassword) {
-      throw new BadRequestRequestError();
+      userModel.updateUser(updateFields, { id: userId });
     }
-    const result = await userModel.updateUser(
-      { username, email, password: hashPassword },
-      { id: userId }
-    );
-    return result;
+
+    return userId;
   }
 
   async delete({ userId }) {

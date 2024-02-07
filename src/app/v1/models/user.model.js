@@ -47,12 +47,26 @@ module.exports = {
     return !!result;
   },
 
-  checkExitUserNameAndEmail: async ({ username, email }) => {
-    const result = await knexInstance("user")
-      .where({ username })
-      .orWhere({ email })
-      .select(knexInstance.raw("1"))
-      .first();
+  checkExitUserNameAndEmail: async ({ username, email, phone, userId }) => {
+    let query = knexInstance("user");
+
+    if (username) {
+      query = query.where({ username });
+    }
+
+    if (email) {
+      query = query.orWhere({ email });
+    }
+
+    if (phone) {
+      query = query.orWhere({ phone });
+    }
+
+    if (userId) {
+      query = query.whereNot({ id: userId });
+    }
+
+    const result = await query.select(knexInstance.raw("1")).first();
     return !!result;
   },
 
@@ -64,7 +78,6 @@ module.exports = {
   },
 
   getTodoFollowUser: async (query, data) => {
-    console.log(query, data);
     const result = await knexInstance("todo_list_label")
       .fullOuterJoin(
         "todo_list",
