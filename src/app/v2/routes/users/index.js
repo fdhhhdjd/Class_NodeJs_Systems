@@ -11,6 +11,7 @@ const {
 const router = express.Router();
 
 router.post("/login/phone", asyncHandler(userController.loginPhone));
+router.post("/verify/phone", asyncHandler(userController.verifyOTP));
 
 router.use(checkAuthorizationAccessToken);
 

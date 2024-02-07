@@ -8,6 +8,11 @@ class UserV2Controller {
       metadata: await userService.loginPhone(req.body),
     }).send(res);
   }
+  async verifyOTP(req, res, ___) {
+    new SuccessResponse({
+      metadata: await userService.verifyOTP(req.body),
+    }).send(res);
+  }
 }
 
 module.exports = new UserV2Controller();
