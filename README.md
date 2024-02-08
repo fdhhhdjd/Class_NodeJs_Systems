@@ -7,7 +7,7 @@
 <a href = "mailto:nguyentientai10@gmail.com"><img src="https://img.icons8.com/fluency/48/000000/send-mass-email.png" alt="License"></a>
 </p>
 
-# Class Online: Learn backend and systems With teacher Tai 
+# Class Online: Learn backend and systems With teacher Tai.
 
 # Connect
 
