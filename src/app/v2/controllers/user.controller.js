@@ -10,7 +10,7 @@ class UserV2Controller {
   }
   async verifyOTP(req, res, ___) {
     new SuccessResponse({
-      metadata: await userService.verifyOTP(req.body),
+      metadata: await userService.verifyOTP(res, req.body),
     }).send(res);
   }
 }

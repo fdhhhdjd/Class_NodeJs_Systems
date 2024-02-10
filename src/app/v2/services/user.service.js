@@ -2,7 +2,6 @@
 const otpGenerator = require("otp-generator");
 const _ = require("lodash");
 const validator = require("validator");
-const userModel = require("../../v1/models/user.model");
 
 //* IMPORT
 const { BadRequestRequestError } = require("../../../cores/error.response");
@@ -11,7 +10,14 @@ const sendEmail = require("../../../commons/utils/sendEmail");
 const userOtpModel = require("../models/user_otp.model");
 const { checkUserSpam } = require("../../../auth/auth.blacklist");
 const { SpamOTP } = require("../../../commons/keys/spam");
-const { TIME } = require("../../../commons/constants");
+const { TIME, TIME_TOKEN } = require("../../../commons/constants");
+const { createTokenJWT } = require("../../../auth/auth.token");
+const userModel = require("../../v1/models/user.model");
+const {
+  app: { accessKey, refetchKey },
+} = require("../../../commons/configs/app.config");
+const { RefetchToken } = require("../../../commons/keys/token");
+const { createCookie } = require("../../../auth/auth.cookie");
 
 class UserV2Service {
   async loginPhone({ phone }) {
@@ -83,7 +89,7 @@ class UserV2Service {
     return OTP;
   }
 
-  async verifyOTP({ otp }) {
+  async verifyOTP(res, { otp }) {
     if (_.isEmpty(otp)) {
       throw new BadRequestRequestError();
     }
@@ -99,7 +105,53 @@ class UserV2Service {
       ["user_id"]
     );
 
-    return result;
+    if (_.isEmpty(result)) {
+      throw new BadRequestRequestError("Login Phone Failed");
+    }
+    const dataInfo = ["id", "username", "email", "role", "password"];
+
+    const userInfo = await userModel.getUserById(
+      { id: result.user_id },
+      dataInfo
+    );
+    const resultAccessToken = createTokenJWT(
+      userInfo,
+      accessKey,
+      TIME_TOKEN.ACCESS
+    );
+    const resultRefetchToken = createTokenJWT(
+      userInfo,
+      refetchKey,
+      TIME_TOKEN.REFETCH
+    );
+
+    const checkEmptyToken =
+      _.isEmpty(resultRefetchToken) || _.isEmpty(resultRefetchToken);
+
+    if (checkEmptyToken) {
+      throw new BadRequestRequestError();
+    }
+
+    const resultUpdatePromise = userModel.updateUser(
+      {
+        refetch_token: resultRefetchToken,
+      },
+      {
+        id: result.user_id,
+      }
+    );
+
+    const resultDeleteOtpPromise = userOtpModel.deleteId({
+      user_id: result.user_id,
+    });
+
+    Promise.all([resultUpdatePromise, resultDeleteOtpPromise]);
+
+    createCookie(res, RefetchToken, resultRefetchToken);
+
+    userInfo.accessToken = resultAccessToken;
+
+    return userInfo;
   }
 }
 
