@@ -38,7 +38,7 @@ const {
 const { checkUserSpam } = require("../../../auth/auth.blacklist");
 const { SpamForget } = require("../../../commons/keys/spam");
 const sendEmail = require("../../../commons/utils/sendEmail");
-const { formatPhone } = require("../../../commons/utils/convert");
+const CheckFieldsBuilder = require("../../../commons/helpers/checkFieldsBuilder");
 class UserService {
   async getAll(req) {
     const data = {
@@ -95,21 +95,25 @@ class UserService {
   }
 
   async create({ username, email }) {
-    const shouldEmpty = _.isEmpty(username) || _.isEmpty(email);
-    if (shouldEmpty) {
-      throw new BadRequestRequestError();
-    }
+    const checkFieldsBuilder = new CheckFieldsBuilder();
 
-    const foundUser = await userModel.checkExitUserNameAndEmail({
-      username,
-      email,
-    });
+    const fields = checkFieldsBuilder
+      .setUsername(username)
+      .setEmail(email)
+      .build();
+
+    const foundUser = await userModel.checkExitUserNameAndEmail(fields);
 
     if (foundUser) {
       throw new BadRequestRequestError();
     }
 
     const randomPassword = generateRandomString(10);
+
+    if (!randomPassword) {
+      throw new BadRequestRequestError();
+    }
+
     const hashPassword = await encodePassword(randomPassword);
 
     if (!hashPassword) {
@@ -125,58 +129,25 @@ class UserService {
   }
 
   async update({ username, email, password, phone }, { userId }) {
-    const updateFields = {};
+    const updateFieldsBuilder = new CheckFieldsBuilder();
 
     if (username !== undefined) {
-      if (validator.isEmpty(username)) {
-        throw new BadRequestRequestError("Username is required");
-      }
-      updateFields.username = username;
+      updateFieldsBuilder.setUsername(username);
     }
 
     if (email !== undefined) {
-      if (validator.isEmpty(email)) {
-        throw new BadRequestRequestError("Email is required");
-      }
-      updateFields.email = email;
+      updateFieldsBuilder.setEmail(email);
     }
 
     if (password !== undefined) {
-      if (
-        !validator.isStrongPassword(password, {
-          minLength: 8,
-          minLowercase: 1,
-          minUppercase: 1,
-          minSymbols: 1,
-        })
-      ) {
-        throw new UnauthorizedError("Password is not strong enough");
-      }
-      const hashPassword = await encodePassword(password);
-      if (!hashPassword) {
-        throw new BadRequestRequestError("Error hashing password");
-      }
-      updateFields.password = hashPassword;
+      updateFieldsBuilder.setPassword(password);
     }
 
     if (phone !== undefined) {
-      if (validator.isEmpty(phone)) {
-        throw new BadRequestRequestError("Phone number is required");
-      }
-      if (!validator.isNumeric(phone)) {
-        throw new BadRequestRequestError("Phone number must be numeric");
-      }
-      if (!validator.isLength(phone, { min: 10, max: 11 })) {
-        throw new BadRequestRequestError(
-          "Phone number must be between 10 and 11 digits"
-        );
-      }
-      if (!/^(0\d{9}|84\d{9})$/.test(phone)) {
-        throw new BadRequestRequestError("Phone number must be Vietnamese");
-      }
-      const formattedPhone = formatPhone(phone);
-      updateFields.phone = formattedPhone;
+      updateFieldsBuilder.setPhone(phone);
     }
+
+    const updateFields = updateFieldsBuilder.build();
 
     if (Object.keys(updateFields).length !== 0) {
       updateFields.userId = userId;
@@ -213,64 +184,50 @@ class UserService {
   }
 
   async register({ email, password, username }) {
-    const checkInputEmpty =
-      _.isEmpty(email) || _.isEmpty(password) || _.isEmpty(username);
-    if (checkInputEmpty) {
-      throw new BadRequestRequestError();
-    }
+    const checkFieldsBuilder = new CheckFieldsBuilder();
 
-    if (!validator.isEmail(email)) {
-      throw new BadRequestRequestError();
-    }
-
-    if (
-      !validator.isStrongPassword(password, {
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minSymbols: 1,
-      })
-    ) {
-      throw new UnauthorizedError();
-    }
+    const fields = checkFieldsBuilder
+      .setEmail(email)
+      .setUsername(username)
+      .setPassword(password)
+      .build();
 
     const foundUser = await userModel.checkExitUserNameAndEmail({
-      username,
-      email,
+      username: fields.username,
+      email: fields.email,
     });
 
     if (foundUser) {
       throw new BadRequestRequestError();
     }
 
-    const hashPassword = await encodePassword(password);
+    const hashPassword = await encodePassword(fields.password);
 
     if (!hashPassword) {
       throw new BadRequestRequestError();
     }
 
-    const result = await userModel.createUser({
-      email,
-      password: hashPassword,
-      username,
-    });
+    fields.password = hashPassword;
+
+    const result = await userModel.createUser(fields);
     return result;
   }
 
   async login(res, { email_or_username, password }) {
-    const checkInputEmpty = _.isEmpty(email_or_username) || _.isEmpty(password);
+    const checkFieldsBuilder = new CheckFieldsBuilder();
 
-    if (checkInputEmpty) {
-      throw new BadRequestRequestError();
-    }
+    checkFieldsBuilder.setPassword(password);
+
     const isEmail = validator.isEmail(email_or_username);
     let foundUser;
 
     if (isEmail) {
+      checkFieldsBuilder.setEmail(email_or_username);
       foundUser = await userModel.checkExists({
         email: email_or_username,
       });
     } else {
+      checkFieldsBuilder.setUsername(email_or_username);
       foundUser = await userModel.checkExists({
         username: email_or_username,
       });
@@ -280,21 +237,23 @@ class UserService {
       throw new UnauthorizedError();
     }
 
+    const fields = checkFieldsBuilder.build();
+
     let userInfo;
     const dataInfo = ["id", "username", "email", "role", "password"];
     if (isEmail) {
-      userInfo = await userModel.getUserById(
-        { email: email_or_username },
-        dataInfo
-      );
+      userInfo = await userModel.getUserById({ email: fields.email }, dataInfo);
     } else {
       userInfo = await userModel.getUserById(
-        { username: email_or_username },
+        { username: fields.username },
         dataInfo
       );
     }
 
-    const checkPassword = await comparePassword(password, userInfo?.password);
+    const checkPassword = await comparePassword(
+      fields.password,
+      userInfo?.password
+    );
 
     if (!checkPassword) {
       throw new UnauthorizedError();
@@ -327,7 +286,7 @@ class UserService {
           refetch_token: resultRefetchToken,
         },
         {
-          email: email_or_username,
+          email: fields.email,
         }
       );
     } else {
@@ -336,7 +295,7 @@ class UserService {
           refetch_token: resultRefetchToken,
         },
         {
-          username: email_or_username,
+          username: fields.username,
         }
       );
     }
@@ -349,11 +308,14 @@ class UserService {
   }
 
   async renewToken({ refetchToken }, { accessToken }) {
-    if (_.isEmpty(accessToken) || _.isEmpty(refetchToken)) {
-      throw new NotFoundError();
-    }
+    const checkFieldsBuilder = new CheckFieldsBuilder();
 
-    const infoTokenAccess = await verifyTokenJWT(accessToken, accessKey);
+    const fields = checkFieldsBuilder
+      .setAccessToken(accessToken)
+      .setRefetchToken(refetchToken)
+      .build();
+
+    const infoTokenAccess = await verifyTokenJWT(fields.accessToken, accessKey);
 
     const checkAccessToken = [TOKEN_EXPIRE].includes(infoTokenAccess);
 
@@ -361,7 +323,10 @@ class UserService {
       throw new NotFoundError();
     }
 
-    const infoRefetchToken = await verifyTokenJWT(refetchToken, refetchKey);
+    const infoRefetchToken = await verifyTokenJWT(
+      fields.refetchToken,
+      refetchKey
+    );
 
     const checkRefetchToken = [TOKEN_EXPIRE, INVALID_TOKEN].includes(
       infoTokenAccess
@@ -395,11 +360,14 @@ class UserService {
   }
 
   async logout(res, { refetchToken }) {
-    if (_.isEmpty(refetchToken)) {
-      throw new NotFoundError();
-    }
+    const fields = new CheckFieldsBuilder()
+      .setRefetchToken(refetchToken)
+      .build();
 
-    const infoRefetchToken = await verifyTokenJWT(refetchToken, refetchKey);
+    const infoRefetchToken = await verifyTokenJWT(
+      fields.refetchToken,
+      refetchKey
+    );
 
     const checkRefetchToken = [TOKEN_EXPIRE, INVALID_TOKEN].includes(
       infoRefetchToken
@@ -409,7 +377,7 @@ class UserService {
       throw new NotFoundError();
     }
 
-    redisInstance.lpush(BlacklistTokens, refetchToken);
+    redisInstance.lpush(BlacklistTokens, fields.refetchToken);
 
     res.clearCookie(RefetchToken);
 
@@ -460,6 +428,8 @@ class UserService {
   }
 
   async forgetPassword(req, { email }) {
+    const fields = new CheckFieldsBuilder().setEmail(email).build();
+
     const result = await checkUserSpam({
       key: SpamForget,
       blockDuration: TIME._1_MINUTE,
@@ -468,11 +438,7 @@ class UserService {
     });
 
     if (result === true) {
-      if (_.isEmpty(email)) {
-        throw new BadRequestRequestError();
-      }
-
-      const userInfo = await userModel.getUserById({ email }, [
+      const userInfo = await userModel.getUserById({ email: fields.email }, [
         "id",
         "username",
       ]);
@@ -524,9 +490,14 @@ class UserService {
   }
 
   async resetPassword({ uniqueString }, { password }) {
+    const fields = new CheckFieldsBuilder()
+      .setGeneralRandomString(uniqueString)
+      .setPassword(password)
+      .build();
+
     const resultInfo = await userVerificationModel.getUserVerificationById(
       {
-        unique_string: uniqueString,
+        unique_string: fields.string,
       },
       ["user_id", "expires_at"]
     );
@@ -549,18 +520,7 @@ class UserService {
       throw new BadRequestRequestError();
     }
 
-    if (
-      !validator.isStrongPassword(password, {
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minSymbols: 1,
-      })
-    ) {
-      throw new UnauthorizedError();
-    }
-
-    const hashPassword = await encodePassword(password);
+    const hashPassword = await encodePassword(fields.password);
 
     if (!hashPassword) {
       throw new BadRequestRequestError();
@@ -590,51 +550,48 @@ class UserService {
   }
 
   async changePassword({ id, username, email }, { password }) {
-    if (_.isEmpty(id) || _.isEmpty(password)) {
-      throw new BadRequestRequestError();
-    }
+    const fields = new CheckFieldsBuilder()
+      .setId(id)
+      .setEmail(email)
+      .setUsername(username)
+      .setPassword(password)
+      .build();
 
     const foundUser = await userModel.checkExists({
-      id,
+      id: fields.id,
     });
 
     if (!foundUser) {
       throw new UnauthorizedError();
     }
 
-    if (
-      !validator.isStrongPassword(password, {
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minSymbols: 1,
-      })
-    ) {
-      throw new UnauthorizedError();
-    }
-
-    const hashPassword = await encodePassword(password);
+    const hashPassword = await encodePassword(fields.password);
 
     if (!hashPassword) {
       throw new BadRequestRequestError();
     }
 
-    userModel.updateUser({ password: hashPassword }, { id });
+    userModel.updateUser({ password: hashPassword }, { id: fields.id });
 
     sendEmail({
-      to: email,
+      to: fields.email,
       subject: `Change Password Thank You!`,
       template: "changePasswordThankYou",
       context: {
-        username,
+        username: fields.username,
       },
     });
 
-    return id;
+    const { password: removePassword, ...newData } = fields;
+
+    return newData;
   }
 
   async acceptResetLogin(res, { refetchToken }) {
-    return await this.logout(res, { refetchToken });
+    const fields = new CheckFieldsBuilder()
+      .setRefetchToken(refetchToken)
+      .build();
+    return await this.logout(res, { refetchToken: fields.refetchToken });
   }
 }
 

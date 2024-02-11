@@ -42,7 +42,7 @@ require("./databases/init.redis");
 // require("./databases/init.firebase");
 
 //* CRON
-require("./crons/user_verification");
+// require("./crons/user_verification");
 
 //* V1
 app.use("/api/v1", require("./app/v1/routes"));

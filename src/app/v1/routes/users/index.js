@@ -15,7 +15,7 @@ router.post("/login", asyncHandler(userController.login));
 
 router.post("/register", asyncHandler(userController.register));
 
-router.post("/renewToken", asyncHandler(userController.renewToken));
+router.get("/renewToken", asyncHandler(userController.renewToken));
 
 router.post("/forget", asyncHandler(userController.forgetPassword));
 

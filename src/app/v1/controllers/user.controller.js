@@ -52,9 +52,10 @@ class UserController {
   }
 
   async renewToken(req, res, ___) {
+    const accessToken = req.headers?.authorization?.split(" ")[1];
     const refetchToken = req?.cookies?.refresh_token;
     new SuccessResponse({
-      metadata: await userService.renewToken({ refetchToken }, req.body),
+      metadata: await userService.renewToken({ refetchToken }, { accessToken }),
     }).send(res);
   }
 
