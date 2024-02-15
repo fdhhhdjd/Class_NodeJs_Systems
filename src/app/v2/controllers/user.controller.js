@@ -13,6 +13,12 @@ class UserV2Controller {
       metadata: await userService.verifyOTP(res, req.body),
     }).send(res);
   }
+
+  async loginGooglePopup(req, res, ___) {
+    new SuccessResponse({
+      metadata: await userService.loginGooglePopup(res, req.body),
+    }).send(res);
+  }
 }
 
 module.exports = new UserV2Controller();

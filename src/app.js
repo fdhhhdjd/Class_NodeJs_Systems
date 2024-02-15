@@ -38,14 +38,15 @@ app.use(
 //* Database & Cache
 require("./databases/init.knex");
 require("./databases/init.redis");
-// require("./databases/init.cloudinary");
-// require("./databases/init.firebase");
+require("./databases/init.cloudinary");
+require("./databases/init.firebase");
 
 //* CRON
-// require("./crons/user_verification");
+require("./crons/user_verification");
 
-//* V1
+// * V1
 app.use("/api/v1", require("./app/v1/routes"));
+
 //* V2
 app.use("/api/v2", require("./app/v2/routes"));
 

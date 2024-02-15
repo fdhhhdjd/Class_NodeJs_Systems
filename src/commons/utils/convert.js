@@ -4,4 +4,10 @@ const formatPhone = (phone) => {
     : `+${phone}`;
   return formattedPhone;
 };
-module.exports = { formatPhone };
+
+const splitUsername = (email) => {
+  const username = email.substring(0, email.indexOf("@"));
+  return username;
+};
+
+module.exports = { formatPhone, splitUsername };

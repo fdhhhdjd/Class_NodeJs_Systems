@@ -97,4 +97,19 @@ module.exports = {
 
     return result;
   },
+
+  upsertUser: (data) =>
+    new Promise((resolve, reject) => {
+      try {
+        const result = knexInstance("user")
+          .insert(data)
+          .onConflict("email")
+          .merge()
+          .returning(["id", "email"]);
+
+        resolve(result);
+      } catch (error) {
+        reject(error);
+      }
+    }),
 };

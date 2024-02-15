@@ -12,3 +12,6 @@ CREATE TABLE public.user (
 
 ALTER TABLE public.user
 ADD COLUMN phone TEXT;
+
+ALTER TABLE "user" ADD CONSTRAINT unique_email UNIQUE ("email");
+ALTER TABLE "user" ALTER COLUMN "password" DROP NOT NULL;

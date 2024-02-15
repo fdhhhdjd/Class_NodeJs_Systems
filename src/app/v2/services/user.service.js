@@ -1,11 +1,13 @@
 //* LIB
 const otpGenerator = require("otp-generator");
 const _ = require("lodash");
-const validator = require("validator");
 
 //* IMPORT
 const { BadRequestRequestError } = require("../../../cores/error.response");
-const { formatPhone } = require("../../../commons/utils/convert");
+const {
+  formatPhone,
+  splitUsername,
+} = require("../../../commons/utils/convert");
 const sendEmail = require("../../../commons/utils/sendEmail");
 const userOtpModel = require("../models/user_otp.model");
 const { checkUserSpam } = require("../../../auth/auth.blacklist");
@@ -18,6 +20,7 @@ const {
 } = require("../../../commons/configs/app.config");
 const { RefetchToken } = require("../../../commons/keys/token");
 const { createCookie } = require("../../../auth/auth.cookie");
+const CheckFieldsBuilder = require("../../../commons/helpers/checkFieldsBuilder");
 
 class UserV2Service {
   async loginPhone({ phone }) {
@@ -29,23 +32,11 @@ class UserV2Service {
     });
 
     if (result) {
-      if (validator.isEmpty(phone)) {
-        throw new BadRequestRequestError();
-      }
+      const checkFieldsBuilder = new CheckFieldsBuilder();
 
-      if (!validator.isNumeric(phone)) {
-        throw new BadRequestRequestError("Number must be a number");
-      }
+      const fields = checkFieldsBuilder.setPhone(phone).build();
 
-      if (!validator.isLength(phone, { min: 10, max: 11 })) {
-        throw new BadRequestRequestError("Number must be between 10 and 11");
-      }
-
-      if (!/^(0\d{9}|84\d{9})$/.test(phone)) {
-        throw new BadRequestRequestError("Number must be vietnamese");
-      }
-
-      const formatPhoneVietnamese = formatPhone(phone);
+      const formatPhoneVietnamese = formatPhone(fields.phone);
 
       const result = await userModel.getUserById(
         { phone: formatPhoneVietnamese },
@@ -146,6 +137,61 @@ class UserV2Service {
     });
 
     Promise.all([resultUpdatePromise, resultDeleteOtpPromise]);
+
+    createCookie(res, RefetchToken, resultRefetchToken);
+
+    userInfo.accessToken = resultAccessToken;
+
+    return userInfo;
+  }
+
+  async loginGooglePopup(res, info) {
+    if (_.isEmpty(info)) {
+      throw new BadRequestRequestError();
+    }
+
+    info.username = splitUsername(info.email);
+
+    const resultUser = await userModel.upsertUser({
+      email: info.email,
+      username: info.username,
+    });
+
+    if (_.isEmpty(resultUser)) {
+      throw new BadRequestRequestError();
+    }
+
+    const { id } = resultUser[0];
+
+    const dataInfo = ["id", "username", "email", "role"];
+
+    const userInfo = await userModel.getUserById({ id }, dataInfo);
+    const resultAccessToken = createTokenJWT(
+      userInfo,
+      accessKey,
+      TIME_TOKEN.ACCESS
+    );
+    const resultRefetchToken = createTokenJWT(
+      userInfo,
+      refetchKey,
+      TIME_TOKEN.REFETCH
+    );
+
+    const checkEmptyToken =
+      _.isEmpty(resultRefetchToken) || _.isEmpty(resultRefetchToken);
+
+    if (checkEmptyToken) {
+      throw new BadRequestRequestError();
+    }
+
+    userModel.updateUser(
+      {
+        refetch_token: resultRefetchToken,
+      },
+      {
+        id,
+      }
+    );
 
     createCookie(res, RefetchToken, resultRefetchToken);
 
