@@ -14,6 +14,7 @@ const dev = {
     accessKey: process.env.ACCESS_TOKEN_SECRET,
     refetchKey: process.env.REFRESH_TOKEN_SECRET,
     radomPassword: process.env.RANDOM_PASSWORD,
+    firebaseMessage: process.env.PRIVATE_KEY_FIREBASE_MESSAGE,
   },
 };
 const pro = {
@@ -26,6 +27,7 @@ const pro = {
     accessKey: process.env.ACCESS_TOKEN_SECRET,
     refetchKey: process.env.REFRESH_TOKEN_SECRET,
     radomPassword: process.env.RANDOM_PASSWORD,
+    firebaseMessage: process.env.PRIVATE_KEY_FIREBASE_MESSAGE,
   },
 };
 const config = { dev, pro };
