@@ -39,6 +39,7 @@ const { checkUserSpam } = require("../../../auth/auth.blacklist");
 const { SpamForget } = require("../../../commons/keys/spam");
 const sendEmail = require("../../../commons/utils/sendEmail");
 const CheckFieldsBuilder = require("../../../commons/helpers/checkFieldsBuilder");
+const notificationService = require("../../v2/services/notification.service");
 class UserService {
   async getAll(req) {
     const data = {
@@ -303,6 +304,8 @@ class UserService {
     createCookie(res, RefetchToken, resultRefetchToken);
 
     userInfo.accessToken = resultAccessToken;
+
+    notificationService.sendDeviceId({ deviceId, notification, meta });
 
     return userInfo;
   }

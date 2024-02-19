@@ -42,7 +42,8 @@ require("./databases/init.cloudinary");
 require("./databases/init.firebase");
 
 //* CRON
-require("./crons/user_verification");
+// require("./crons/user_verification");
+// require("./crons/user_otp");
 
 // * V1
 app.use("/api/v1", require("./app/v1/routes"));
