@@ -1,8 +1,10 @@
+//* LIb
 const winston = require("winston");
 const { combine, timestamp, printf } = winston.format;
 const DailyRotateFile = require("winston-daily-rotate-file");
 const path = require("path");
 
+//* IMPORT
 const {
   app: { node, log },
 } = require("../commons/configs/app.config");

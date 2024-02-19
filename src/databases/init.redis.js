@@ -1,6 +1,7 @@
 //* LIB
 const IOREDIS = require("ioredis");
 
+//* IMPORT
 const {
   redis: { host, port, user, password },
 } = require("../commons/configs/redis.config");
