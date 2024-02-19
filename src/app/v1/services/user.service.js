@@ -214,7 +214,7 @@ class UserService {
     return result;
   }
 
-  async login(res, { email_or_username, password }) {
+  async login(res, { email_or_username, password, deviceId }) {
     const checkFieldsBuilder = new CheckFieldsBuilder();
 
     checkFieldsBuilder.setPassword(password);
@@ -305,7 +305,16 @@ class UserService {
 
     userInfo.accessToken = resultAccessToken;
 
-    notificationService.sendDeviceId({ deviceId, notification, meta });
+    if (deviceId) {
+      notificationService.sendDeviceId({
+        deviceId,
+        notification: {
+          title: "Login Success!!",
+          body: "Did you just login ?",
+          mutable_content: true,
+        },
+      });
+    }
 
     return userInfo;
   }

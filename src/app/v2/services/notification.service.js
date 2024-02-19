@@ -7,7 +7,18 @@ const googleApi = require("../../../apis/google.api");
 const axiosService = require("../../../libs/method");
 
 class NotificationService {
-  async sendDeviceId({ deviceId, notification, meta }) {
+  async sendDeviceId({
+    deviceId,
+    notification,
+    meta = {
+      url: "https://i.pinimg.com/originals/ca/05/d1/ca05d1cf1a034f9b2eafc644c102c551.gif",
+      dl: "https://www.profile-forme.com",
+    },
+  }) {
+    if (_.isEmpty(deviceId) || _.isEmpty(notification)) {
+      throw new BadRequestRequestError();
+    }
+
     const data = {
       to: deviceId,
       notification,
@@ -27,6 +38,9 @@ class NotificationService {
   }
 
   async sendMulticast({ deviceIds, notification, meta }) {
+    if (_.isEmpty(deviceIds) || _.isEmpty(notification)) {
+      throw new BadRequestRequestError();
+    }
     const data = {
       registration_ids: deviceIds,
       notification,
@@ -46,6 +60,10 @@ class NotificationService {
   }
 
   async sendTopic({ topics = "/topics/class-fullstack", notification, meta }) {
+    if (_.isEmpty(notification)) {
+      throw new BadRequestRequestError();
+    }
+
     const data = {
       to: topics,
       notification,
@@ -65,6 +83,10 @@ class NotificationService {
   }
 
   async sendTopicCondition({ condition, notification, meta }) {
+    if (_.isEmpty(notification) || _.isEmpty(notification)) {
+      throw new BadRequestRequestError();
+    }
+
     const data = {
       condition,
       notification,
