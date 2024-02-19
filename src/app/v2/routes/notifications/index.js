@@ -15,6 +15,18 @@ router.post(
   asyncHandler(notificationController.sendDeviceId)
 );
 
+router.post(
+  "/multicast/device",
+  asyncHandler(notificationController.sendMulticast)
+);
+
+router.post("/topic/device", asyncHandler(notificationController.sendTopic));
+
+router.post(
+  "/condition/device",
+  asyncHandler(notificationController.sendTopicCondition)
+);
+
 router.use(checkAuthorizationAccessToken);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const googleApi = {
   firebase: {
     message: {
-      sendSingleDevice: "https://fcm.googleapis.com/fcm/send",
+      sendSingleDevice: "/fcm/send",
     },
   },
 };

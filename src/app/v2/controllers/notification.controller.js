@@ -9,21 +9,21 @@ class NotificationV2Controller {
     }).send(res);
   }
 
-  async sendMulticast(_, res, ___) {
+  async sendMulticast(req, res, ___) {
     new SuccessResponse({
-      metadata: await notificationService.sendMulticast(),
+      metadata: await notificationService.sendMulticast(req.body),
     }).send(res);
   }
 
-  async sendTopic(_, res, ___) {
+  async sendTopic(req, res, ___) {
     new SuccessResponse({
-      metadata: await notificationService.sendTopic(),
+      metadata: await notificationService.sendTopic(req.body),
     }).send(res);
   }
 
-  async sendTopicCondition(_, res, ___) {
+  async sendTopicCondition(req, res, ___) {
     new SuccessResponse({
-      metadata: await notificationService.sendTopicCondition(),
+      metadata: await notificationService.sendTopicCondition(req.body),
     }).send(res);
   }
 }
