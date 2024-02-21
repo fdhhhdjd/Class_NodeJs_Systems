@@ -6,14 +6,15 @@ const cors = require("cors");
 const { default: helmet } = require("helmet");
 const compression = require("compression");
 const dotenv = require("dotenv");
+const { v4: uuid } = require("uuid");
 
 //* IMPORT
 const { NODE_ENV, LIMIT_BODY } = require("./commons/constants");
-const { NotFoundError } = require("./cores/error.response");
 const {
   app: { morgan: morganConfig, node },
 } = require("./commons/configs/app.config");
 const { errorHandler } = require("./commons/helpers/errorHandle");
+const myLogger = require("./loggers/mylogger.log");
 
 const app = express();
 dotenv.config();
@@ -35,6 +36,18 @@ app.use(
   })
 );
 
+app.use((req, __, next) => {
+  const requestId = req.headers["x-request-id"];
+  req.requestId = requestId ? requestId : uuid();
+
+  myLogger.log(`input params::${req.method}`, [
+    req.path,
+    { requestId: req.requestId },
+    req.method === "POST" ? req.body : req.query,
+  ]);
+  next();
+});
+
 //* Database & Cache
 require("./databases/init.knex");
 require("./databases/init.redis");
@@ -51,12 +64,21 @@ app.use("/api/v1", require("./app/v1/routes"));
 //* V2
 app.use("/api/v2", require("./app/v2/routes"));
 
-app.use((_, __, next) => {
-  next(new NotFoundError());
+app.use((error, __, next) => {
+  next(error);
 });
 
-app.use((error, __, res, ____) => {
+app.use((error, req, res, ____) => {
   const checkNodeApp = node === NODE_ENV.DEV;
+
+  const reqMessage = `${error.status} - ${
+    Date.now() - error.now
+  }ms - Response: ${JSON.stringify(error)}`;
+  myLogger.error(reqMessage, [
+    req.path,
+    { requestId: req.requestId },
+    req.method === "POST" ? req.body : req.query,
+  ]);
 
   const resultError = errorHandler(error, checkNodeApp);
 
