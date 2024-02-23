@@ -50,8 +50,11 @@
     HSET cart:1 product1 2
     HSET cart:1 product2 1  product3 3  product4 1
 
-    # LENGTH
+    # Length count
     HLEN cart:1
+
+    # Check exits
+    HEXISTS cart:1 product3
 
     # Get only key
     HKEYS cart:1
@@ -67,4 +70,26 @@
 
     # DEL ALL
     DEL cart:1
+```
+
+## 5 LIST
+```bash
+    # Add
+    LPUSH order_history:user-001 "order_id_4"
+
+    # Get all
+    LRANGE order_history:user-001 0 -1
+
+    # Get Detail flower index
+    LINDEX order_history:user-001 0
+
+    # Length 
+    LLEN order_history:user-001
+
+    # Exits
+    EXISTS order_history:user-001
+
+    # Del 
+    LREM order_history:user-001 0 "order_id_1"
+
 ```
