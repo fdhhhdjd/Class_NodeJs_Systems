@@ -14,16 +14,57 @@
 
 ## 3. STRING
 ```bash
+    # Length 
+    STRLEN name
+
     # Embstring ( <= 44bytes) 
-    set name 0123456789012345678901234567890123456789abc
+    SET name 0123456789012345678901234567890123456789abc
 
     # Raw ( > 44 bytes )
-    set name1 0123456789012345678901234567890123456789abcsdsdsdsdsdsdsdasdasdasdsd
+    SET name1 0123456789012345678901234567890123456789abcsdsdsdsdsdsdsdasdasdasdsd
 
     # Int 
-    set name2 10
+    SET name2 10
 
     # TTL and handle key exit
     set lock_key_unique unique_value NX PX 10000
-    ttl lock_key_unique
+    TTL lock_key_unique
+
+    # Count
+    INCR like:product-001
+    INCRBY like:product-001 5 
+    DECR like:product-001
+    DECRBY  like:product-001 5
+
+    # Check exits
+    EXISTS  block_user_id
+
+    # Del
+    DEL like:product-001
+```
+
+## 4. HASH
+
+```bash
+    # Add single and add multiple
+    HSET cart:1 product1 2
+    HSET cart:1 product2 1  product3 3  product4 1
+
+    # LENGTH
+    HLEN cart:1
+
+    # Get only key
+    HKEYS cart:1
+
+    # Get all key and value 
+    HGETALL cart:1 
+
+    # Get detail key and value
+    HGET cart:1 product2
+
+    # DEL key 
+    HDEL cart:1 product2
+
+    # DEL ALL
+    DEL cart:1
 ```
