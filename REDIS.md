@@ -12,10 +12,14 @@
     keys 't*' 
 ```
 
+
 ## 3. STRING
 ```bash
     # Length 
     STRLEN name
+
+    # Check
+    object encoding str 
 
     # Embstring ( <= 44bytes) 
     SET name 0123456789012345678901234567890123456789abc
