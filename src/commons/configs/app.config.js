@@ -7,7 +7,7 @@ const { NODE_ENV } = require("../constants");
 const dev = {
   app: {
     port: process.env.PORT || 5000,
-    morgan: process.env.MORGAN || NODE_ENV.DEV,
+    morgan: process.env.MORGAN || "dev",
     node: process.env.NODE_ENV || NODE_ENV.DEV,
     web_server: process.env.WEB_SERVER,
     log: process.env.LOG_LEVEL,
