@@ -76,6 +76,8 @@
 ```bash
     # Add
     LPUSH order_history:user-001 "order_id_4"
+    LINSERT order_history:user-001 before order_id_1 order_id_5
+    LINSERT order_history:user-001 before order_id_4 order_id_6
 
     # Get all
     LRANGE order_history:user-001 0 -1
@@ -92,6 +94,9 @@
     # Del 
     LREM order_history:user-001 0 "order_id_1"
 
+    # Advance
+    lpush l:ticket ticket:01 
+    blpop l:ticket 0
 ```
 
 ## 5 SET
@@ -112,6 +117,10 @@
 
     # The common ground
     SINTER favorite_products:user-001 favorite_products:user-002 favorite_products:user-003
+    SDIFF favorite_products:user-001 favorite_products:user-002 favorite_products:user-003
+
+    # Get random 
+    SRANDMEMBER favorite_products:user-001
 
     # The common ground and create key 
     SUNIONSTORE all_favorite_products favorite_products:user-001 favorite_products:user-002 favorite_products:user-003 
