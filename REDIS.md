@@ -93,3 +93,40 @@
     LREM order_history:user-001 0 "order_id_1"
 
 ```
+
+## 5 SET
+```bash
+    # Add
+    SADD favorite_products:user-001 product1 product2 product3
+    SADD favorite_products:user-002  product1 product5
+    SADD favorite_products:user-003  product10 product5
+    
+    # Get all
+    SMEMBERS favorite_products:user-001  
+
+    # Get all count 
+    SRANDMEMBER favorite_products:user-001 2
+
+    # counter 
+    SCARD favorite_products:user-001  
+
+    # The common ground
+    SINTER favorite_products:user-001 favorite_products:user-002 favorite_products:user-003
+
+    # The common ground and create key 
+    SUNIONSTORE all_favorite_products favorite_products:user-001 favorite_products:user-002 favorite_products:user-003 
+
+    # Not duplicate between all key 
+    SUNION favorite_products:user-001 favorite_products:user-002 favorite_products:user-003   
+    SUNION favorite_products:user-001 favorite_products:user-002 favorite_products:user-003 ... favorite_products:user-n 
+
+    # Show data page
+    SSCAN favorite_products:user-001 0 COUNT 10
+
+    # Del key 
+    SREM favorite_products:user-001 product2
+
+    # Get and delete Random
+    SPOP favorite_products:user-001
+
+```
