@@ -100,7 +100,7 @@
     SADD favorite_products:user-001 product1 product2 product3
     SADD favorite_products:user-002  product1 product5
     SADD favorite_products:user-003  product10 product5
-    
+
     # Get all
     SMEMBERS favorite_products:user-001  
 
@@ -128,5 +128,32 @@
 
     # Get and delete Random
     SPOP favorite_products:user-001
+```
 
+## 6 ZSET
+```bash
+    # Add
+    ZADD sorted_favorite_products:user-001 1 "product3" 2 "product2" 3 "product1" 4 "product6" 5 "product5" 6 "product4" 
+
+    # Get data sort ASC ( 1 2 3 )
+    ZRANGE sorted_favorite_products:user-001 0 -1
+    ZRANGE sorted_favorite_products:user-001 0 -1 WITHSCORES
+
+    # Get data sort DESC ( 3 2 1 )
+    ZREVRANGE sorted_favorite_products:user-001 0 -1
+    ZREVRANGE sorted_favorite_products:user-001 0 -1 WITHSCORES
+
+    # GET DETAIL
+    ZSCORE sorted_favorite_products:user-001 "product2" 
+
+    # GET is within approx ( Khoang) 
+    ZRANGEBYSCORE sorted_favorite_products:user-001 2 4 
+    ZCOUNT sorted_favorite_products:user-001 2 4 
+
+    # Counter
+    ZCARD sorted_favorite_products:user-001
+    
+    # Del
+    ZREM sorted_favorite_products:user-001 "product3"
+    DEL sorted_favorite_products:user-001
 ```
