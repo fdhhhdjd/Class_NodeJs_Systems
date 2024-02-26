@@ -70,11 +70,28 @@ module.exports = {
     return !!result;
   },
 
-  getAllUser: async (data) => {
-    const result = await knexInstance("user")
-      .select(data)
-      .orderBy("created_at", "desc");
+  getAllUser: async (data, offset, limit, search) => {
+    let query = knexInstance("user").select(data);
+
+    if (search) {
+      query
+        .where("username", "like", `%${search}%`)
+        .orWhere("email", "like", `%${search}%`)
+        .orWhere("phone", "like", `%${search}%`);
+    }
+
+    const result = await query
+      .orderBy("created_at", "desc")
+      .offset(offset)
+      .limit(limit);
     return result;
+  },
+
+  getTotalUser: async () => {
+    const totalAggregate = await knexInstance("user")
+      .count("* as total")
+      .first();
+    return totalAggregate?.total || 0;
   },
 
   getTodoFollowUser: async (query, data) => {

@@ -1,6 +1,6 @@
 # Learn Redis
 
-## 1.CONNECT REDIS
+## 1. CONNECT REDIS
 ```bash
     redis-cli -h <host> -p <port>  -a  <password>
 ```
@@ -11,7 +11,6 @@
     # Search key
     keys 't*' 
 ```
-
 
 ## 3. STRING
 ```bash

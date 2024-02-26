@@ -41,7 +41,7 @@ const sendEmail = require("../../../commons/utils/sendEmail");
 const CheckFieldsBuilder = require("../../../commons/helpers/checkFieldsBuilder");
 const notificationService = require("../../v2/services/notification.service");
 class UserService {
-  async getAll(req) {
+  async getAll(req, page = 0, limit = 0, search = "") {
     const data = {
       id: "id",
       username: "username",
@@ -55,8 +55,25 @@ class UserService {
       "Access Token": req.accessToken,
     });
 
-    const result = await userModel.getAllUser(data);
-    return result;
+    if (page <= 0 || limit <= 0) {
+      const totalAggregate = await userModel.getAllUser(data, _, _, search);
+      return {
+        aggregate: totalAggregate.length,
+        result: totalAggregate,
+      };
+    }
+
+    const offset = (page - 1) * limit;
+
+    const totalAggregate = await userModel.getAllUser(data);
+    const result = await userModel.getAllUser(data, offset, limit, search);
+
+    return {
+      aggregate: totalAggregate.length,
+      offset,
+      limit,
+      result,
+    };
   }
 
   async getDetail({ userId }) {
