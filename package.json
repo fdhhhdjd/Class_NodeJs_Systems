@@ -33,6 +33,7 @@
     "nodemailer-express-handlebars": "^6.1.0",
     "otp-generator": "^4.0.1",
     "pg": "^8.11.3",
+    "puppeteer": "^22.3.0",
     "uuid": "^9.0.1",
     "validator": "^13.11.0",
     "winston": "^3.11.0",
