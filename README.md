@@ -20,7 +20,7 @@
 ## [Github used Pg](https://github.com/dhatGuy/PERN-Store/blob/main/server/db/auth.db.js)
 
 
-## Team Word: Liên hệ công việc https://profile-forme.com
+## Team Word: Liên hệ công việc ☎ https://profile-forme.com
 
 ## 1. Nguyen Tien Tai ( MainTain 🚩).
 
