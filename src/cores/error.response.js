@@ -69,10 +69,21 @@ class InternalServerError extends ErrorResponse {
     super(message, statusCode);
   }
 }
+
+class TooManyRequestsError extends ErrorResponse {
+  constructor(
+    message = ReasonPhrases.TOO_MANY_REQUESTS,
+    statusCode = StatusCodes.TOO_MANY_REQUESTS
+  ) {
+    super(message, statusCode);
+  }
+}
+
 module.exports = {
   BadRequestRequestError,
   InternalServerError,
   NotFoundError,
   UnauthorizedError,
   GoneError,
+  TooManyRequestsError,
 };

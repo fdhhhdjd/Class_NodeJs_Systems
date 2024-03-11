@@ -9,11 +9,11 @@ const {
   NotFoundError,
   UnauthorizedError,
   GoneError,
+  TooManyRequestsError,
 } = require("../../../cores/error.response");
 const userModel = require("../models/user.model");
 const userVerificationModel = require("../models/user_verification");
 const { createTokenJWT, verifyTokenJWT } = require("../../../auth/auth.token");
-
 const {
   app: { accessKey, refetchKey },
 } = require("../../../commons/configs/app.config");
@@ -36,10 +36,13 @@ const {
   generateRandomLink,
 } = require("../../../commons/utils/random");
 const { checkUserSpam } = require("../../../auth/auth.blacklist");
-const { SpamForget } = require("../../../commons/keys/spam");
+const { SpamForget, SpamPassword } = require("../../../commons/keys/spam");
 const sendEmail = require("../../../commons/utils/sendEmail");
 const CheckFieldsBuilder = require("../../../commons/helpers/checkFieldsBuilder");
 const notificationService = require("../../v2/services/notification.service");
+const redisPublisher = require("../../../databases/init.pub");
+const { User } = require("../../../commons/keys/pub");
+
 class UserService {
   async getAll(req, page = 0, limit = 0, search = "") {
     const data = {
@@ -274,6 +277,23 @@ class UserService {
     );
 
     if (!checkPassword) {
+      const result = await checkUserSpam({
+        key: SpamPassword,
+        blockDuration: TIME._2_MINUTE,
+        delDuration: TIME._3_MINUTE,
+        maxRequest: 4,
+      });
+
+      if (result !== true) {
+        if (User.SpamPassword) {
+          redisPublisher.publish(User.SpamPassword, {
+            email: userInfo.email,
+            timeBlock: TIME._2_MINUTE,
+          });
+        }
+        throw new TooManyRequestsError(result);
+      }
+
       throw new UnauthorizedError();
     }
 
@@ -515,7 +535,7 @@ class UserService {
 
       return resetPasswordUrl;
     }
-    throw new BadRequestRequestError(result);
+    throw new TooManyRequestsError(result);
   }
 
   async resetPassword({ uniqueString }, { password }) {

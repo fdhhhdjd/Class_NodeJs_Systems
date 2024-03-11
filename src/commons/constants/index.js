@@ -19,6 +19,7 @@ const TIME_COOKIE = {
 const TIME = {
   _15_SECOND: 15 * 1000,
   _1_MINUTE: 60,
+  _2_MINUTE: 2 * 60,
   _3_MINUTE: 3 * 60,
 };
 
