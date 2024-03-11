@@ -255,6 +255,7 @@ class UserService {
       const result = await redisInstance.get(keySetEmail);
       checkFieldsBuilder.setEmail(email_or_username);
 
+      // Check user true is exits if false not exits
       if (result) {
         foundUser = true;
       } else {
