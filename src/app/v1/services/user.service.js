@@ -246,7 +246,7 @@ class UserService {
     const isEmail = validator.isEmail(email_or_username);
     let foundUser;
 
-    // If is email handle email, if is username handle username
+    // If is true handle email, if is false handle username
     if (isEmail) {
       // Check redis email exits in cache, if exits then return true, if not exits cache then run sql query
       const keySetEmail = getURIFromTemplate(VerifyEmail, {
