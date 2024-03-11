@@ -42,6 +42,8 @@ const CheckFieldsBuilder = require("../../../commons/helpers/checkFieldsBuilder"
 const notificationService = require("../../v2/services/notification.service");
 const redisPublisher = require("../../../databases/init.pub");
 const { User } = require("../../../commons/keys/pub");
+const { getURIFromTemplate } = require("../../../commons/utils/convert");
+const { VerifyEmail } = require("../../../commons/keys/user");
 
 class UserService {
   async getAll(req, page = 0, limit = 0, search = "") {
@@ -235,18 +237,31 @@ class UserService {
   }
 
   async login(res, { email_or_username, password, deviceId }) {
+    // Validate input parameters
     const checkFieldsBuilder = new CheckFieldsBuilder();
 
     checkFieldsBuilder.setPassword(password);
 
+    // Do have input must is email?
     const isEmail = validator.isEmail(email_or_username);
     let foundUser;
 
+    // If is email handle email, if is username handle username
     if (isEmail) {
-      checkFieldsBuilder.setEmail(email_or_username);
-      foundUser = await userModel.checkExists({
+      // Check redis email exits in cache, if exits then return true, if not exits cache then run sql query
+      const keySetEmail = getURIFromTemplate(VerifyEmail, {
         email: email_or_username,
       });
+      const result = await redisInstance.get(keySetEmail);
+      checkFieldsBuilder.setEmail(email_or_username);
+
+      if (result) {
+        foundUser = true;
+      } else {
+        foundUser = await userModel.checkExists({
+          email: email_or_username,
+        });
+      }
     } else {
       checkFieldsBuilder.setUsername(email_or_username);
       foundUser = await userModel.checkExists({
@@ -254,16 +269,26 @@ class UserService {
       });
     }
 
+    // Account not exits info error
     if (!foundUser) {
       throw new UnauthorizedError();
     }
 
+    // Get info account user
     const fields = checkFieldsBuilder.build();
 
     let userInfo;
     const dataInfo = ["id", "username", "email", "role", "password"];
     if (isEmail) {
+      // Get info account user for database
       userInfo = await userModel.getUserById({ email: fields.email }, dataInfo);
+
+      const keySetEmail = getURIFromTemplate(VerifyEmail, {
+        email: userInfo.email,
+      });
+
+      // Set email into redis the first call api
+      redisInstance.set(keySetEmail, userInfo.email);
     } else {
       userInfo = await userModel.getUserById(
         { username: fields.username },
@@ -271,6 +296,7 @@ class UserService {
       );
     }
 
+    // Check password if user spam password a lot of times block account and send emails
     const checkPassword = await comparePassword(
       fields.password,
       userInfo?.password
@@ -297,7 +323,7 @@ class UserService {
       throw new UnauthorizedError();
     }
 
-    // Remove Token accessToken
+    // Create tow token and Remove Token accessToken
     const { password: userPassword, ...userInfoWithoutPassword } = userInfo;
 
     const resultAccessToken = createTokenJWT(
@@ -318,6 +344,7 @@ class UserService {
       throw new BadRequestRequestError();
     }
 
+    // Update Refetch Token into database
     if (isEmail) {
       userModel.updateUser(
         {
@@ -338,10 +365,12 @@ class UserService {
       );
     }
 
+    // Save Refetch Token into cookie
     createCookie(res, RefetchToken, resultRefetchToken);
 
     userInfo.accessToken = resultAccessToken;
 
+    // Send notification firebase device the computer if login successful
     if (deviceId) {
       notificationService.sendDeviceId({
         deviceId,

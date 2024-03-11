@@ -10,4 +10,8 @@ const splitUsername = (email) => {
   return username;
 };
 
-module.exports = { formatPhone, splitUsername };
+const getURIFromTemplate = (template, data) => {
+  return template.replace(/\${(\w+)}/g, (_, key) => data[key]);
+};
+
+module.exports = { formatPhone, splitUsername, getURIFromTemplate };
