@@ -63,9 +63,7 @@
     const yourself = new Map();
 
     // Add key-value pairs to the Map
-    yourself.set('fullname', 'Nguyen Tien Tai');
-    yourself.set('age', 24);
-    yourself.set('job', 'developer and teacher');
+    yourself.set('fullname', 'Nguyen Tien Tai').set('age', 24).set('job', 'developer and teacher');
 
     // Get the value for a key from the Map
     const valueForKeyAge = yourself.get('age');
