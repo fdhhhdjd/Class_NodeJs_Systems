@@ -24,33 +24,33 @@ const CheckFieldsBuilder = require("../../../commons/helpers/checkFieldsBuilder"
 
 class UserV2Service {
   async loginPhone({ phone }) {
-    const result = await checkUserSpam({
+    const resultSpam = await checkUserSpam({
       key: SpamOTP,
       blockDuration: TIME._1_MINUTE,
       delDuration: TIME._3_MINUTE,
       maxRequest: 3,
     });
 
-    if (result) {
-      const checkFieldsBuilder = new CheckFieldsBuilder();
-
-      const fields = checkFieldsBuilder.setPhone(phone).build();
-
-      const formatPhoneVietnamese = formatPhone(fields.phone);
-
-      const result = await userModel.getUserById(
-        { phone: formatPhoneVietnamese },
-        ["username", "email", "id"]
-      );
-
-      if (_.isEmpty(result)) {
-        throw new BadRequestRequestError();
-      }
-
-      this.sendOTP(result);
-      return `OTP had send email ${result.email}`;
+    if (resultSpam) {
+      throw new BadRequestRequestError(resultSpam);
     }
-    throw new BadRequestRequestError(result);
+    const checkFieldsBuilder = new CheckFieldsBuilder();
+
+    const fields = checkFieldsBuilder.setPhone(phone).build();
+
+    const formatPhoneVietnamese = formatPhone(fields.phone);
+
+    const result = await userModel.getUserById(
+      { phone: formatPhoneVietnamese },
+      ["username", "email", "id"]
+    );
+
+    if (_.isEmpty(result)) {
+      throw new BadRequestRequestError();
+    }
+
+    this.sendOTP(result);
+    return `OTP had send email ${result.email}`;
   }
 
   async sendOTP({ username, email, id }) {

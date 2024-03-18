@@ -59,8 +59,7 @@ class CheckFieldsBuilder {
     if (!/^(0\d{9}|84\d{9})$/.test(phone)) {
       throw new BadRequestRequestError("Phone number must be Vietnamese");
     }
-    const formattedPhone = formatPhone(phone);
-    this.fields.phone = formattedPhone;
+    this.fields.phone = phone;
     return this;
   }
 

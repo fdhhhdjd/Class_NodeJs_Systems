@@ -1,6 +1,7 @@
 //* IMPORT
 const { TIME } = require("../commons/constants");
 const { BlacklistTokens } = require("../commons/keys/blacklist");
+const { BadRequestRequestError } = require("../cores/error.response");
 const { getRedis } = require("../databases/init.redis");
 const { instanceConnect } = getRedis();
 
@@ -18,8 +19,8 @@ const isTokenBlacklisted = async (refetchToken) => {
 
 const checkUserSpam = async ({
   key,
-  blockDuration = TIME._1_MINUTE,
-  delDuration = TIME._3_MINUTE,
+  blockDuration = TIME._3_MINUTE,
+  delDuration = TIME._1_MINUTE,
   maxRequest = 3,
 }) => {
   try {
@@ -38,10 +39,9 @@ const checkUserSpam = async ({
 
     if (numRequests > MAX_REQUESTS) {
       return `You are blocked for ${_ttl}s. Thank you.`;
+    } else {
+      instanceConnect.expire(key, DELETE_DURATION_SECONDS);
     }
-
-    instanceConnect.expire(key, DELETE_DURATION_SECONDS);
-    return true;
   } catch (error) {
     return error?.message;
   }
