@@ -4,8 +4,8 @@ const userService = require("../services/user.service");
 
 class UserController {
   async getAll(req, res, ___) {
-    const queryPage = Number(req.query.page);
-    const queryLimit = Number(req.query.limit);
+    const queryPage = req.query.page ? Number(req.query.page) : 0;
+    const queryLimit = req.query.limit ? Number(req.query.limit) : 0;
     const querySearch = req.query.search;
 
     new SuccessResponse({

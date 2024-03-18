@@ -29,7 +29,9 @@ const {
   encodePassword,
   comparePassword,
 } = require("../../../auth/auth.password");
-const redisInstance = require("../../../databases/init.redis");
+const { getRedis } = require("../../../databases/init.redis");
+const { instanceConnect } = getRedis();
+
 const { BlacklistTokens } = require("../../../commons/keys/blacklist");
 const {
   generateRandomString,
@@ -252,7 +254,7 @@ class UserService {
       const keySetEmail = getURIFromTemplate(VerifyEmail, {
         email: email_or_username,
       });
-      const result = await redisInstance.get(keySetEmail);
+      const result = await instanceConnect.get(keySetEmail);
       checkFieldsBuilder.setEmail(email_or_username);
 
       // Check user true is exits if false not exits
@@ -289,7 +291,7 @@ class UserService {
       });
 
       // Set email into redis the first call api
-      redisInstance.set(keySetEmail, userInfo.email);
+      instanceConnect.set(keySetEmail, userInfo.email);
     } else {
       userInfo = await userModel.getUserById(
         { username: fields.username },
@@ -456,7 +458,7 @@ class UserService {
       throw new NotFoundError();
     }
 
-    redisInstance.lpush(BlacklistTokens, fields.refetchToken);
+    instanceConnect.lpush(BlacklistTokens, fields.refetchToken);
 
     res.clearCookie(RefetchToken);
 
@@ -490,7 +492,7 @@ class UserService {
 
     const [start, end] = [0, -1];
 
-    const blacklistTokens = await redisInstance.lrange(
+    const blacklistTokens = await instanceConnect.lrange(
       BlacklistTokens,
       start,
       end
@@ -501,7 +503,7 @@ class UserService {
       return userInfo;
     }
 
-    redisInstance.lpush(BlacklistTokens, userInfo.refetch_token);
+    instanceConnect.lpush(BlacklistTokens, userInfo.refetch_token);
 
     return userInfo;
   }

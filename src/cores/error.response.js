@@ -79,6 +79,15 @@ class TooManyRequestsError extends ErrorResponse {
   }
 }
 
+class RedisError extends ErrorResponse {
+  constructor(
+    message = ReasonPhrases.INTERNAL_SERVER_ERROR,
+    statusCode = StatusCodes.INTERNAL_SERVER_ERROR
+  ) {
+    super(message, statusCode);
+  }
+}
+
 module.exports = {
   BadRequestRequestError,
   InternalServerError,
@@ -86,4 +95,5 @@ module.exports = {
   UnauthorizedError,
   GoneError,
   TooManyRequestsError,
+  RedisError,
 };

@@ -50,7 +50,9 @@ app.use((req, __, next) => {
 
 //* Database & Cache
 require("./databases/init.knex");
-require("./databases/init.redis");
+const initRedis = require("./databases/init.redis");
+initRedis.initRedis();
+
 // require("./databases/init.cloudinary");
 // require("./databases/init.firebase");
 
