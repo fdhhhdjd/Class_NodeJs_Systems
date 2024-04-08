@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "DEBUG=ioredis:* node --watch server.js",
+    "cluster": "DEBUG=ioredis:* node --watch primary.mjs",
     "tai": "node --watch server.js",
     "node": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"

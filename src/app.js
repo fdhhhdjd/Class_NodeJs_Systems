@@ -51,6 +51,7 @@ app.use((req, __, next) => {
 //* Database & Cache
 require("./databases/init.knex");
 const initRedis = require("./databases/init.redis");
+const { StatusCodes } = require("./commons/utils/httpStatusCode");
 initRedis.initRedis();
 
 // require("./databases/init.cloudinary");
@@ -66,8 +67,9 @@ app.use("/api/v1", require("./app/v1/routes"));
 //* V2
 app.use("/api/v2", require("./app/v2/routes"));
 
-app.use((error, __, next) => {
-  next(error);
+app.use((_, __, next) => {
+  const ErrorCode = new Error(StatusCodes.NOT_FOUND);
+  return next(ErrorCode);
 });
 
 app.use((error, req, res, ____) => {
