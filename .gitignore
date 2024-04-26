@@ -3,3 +3,4 @@ node_modules
 src/logs
 yarn.lock
 firebaseConfig.json
+cert
