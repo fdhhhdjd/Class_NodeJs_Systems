@@ -13,25 +13,25 @@ const logger = require("./src/loggers/winston.log");
 const initRedis = require("./src/databases/init.redis");
 
 // HTTP
-// const server = app.listen(PORT, () => {
-//   console.info(`💸 Api backend start with http://localhost:${PORT} 🔥`);
-// });
+const server = app.listen(PORT, () => {
+  console.info(`💸 Api backend start with http://localhost:${PORT} 🔥`);
+});
 
 // HTTPS
-const sslServer = https.createServer(
-  {
-    // Todo: C1
-    // key: fs.readFileSync(path.join(__dirname, "cert", "key.pem")),
-    // cert: fs.readFileSync(path.join(__dirname, "cert", "cert.pem")),
-    // Todo: C2
-    key: fs.readFileSync(path.join(__dirname, "cert", "key.pem")),
-    cert: fs.readFileSync(path.join(__dirname, "cert", "cert.pem")),
-  },
-  app
-);
-sslServer.listen(PORT, () => {
-  console.info(`💸 Api backend start with https://localhost:${PORT} 🔥`);
-});
+// const sslServer = https.createServer(
+//   {
+//     // Todo: C1
+//     // key: fs.readFileSync(path.join(__dirname, "cert", "key.pem")),
+//     // cert: fs.readFileSync(path.join(__dirname, "cert", "cert.pem")),
+//     // Todo: C2
+//     key: fs.readFileSync(path.join(__dirname, "cert", "key.pem")),
+//     cert: fs.readFileSync(path.join(__dirname, "cert", "cert.pem")),
+//   },
+//   app
+// );
+// sslServer.listen(PORT, () => {
+//   console.info(`💸 Api backend start with https://localhost:${PORT} 🔥`);
+// });
 
 const cleanup = () => {
   initRedis.closeRedis();
