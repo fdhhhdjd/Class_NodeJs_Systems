@@ -9,7 +9,11 @@ const router = express.Router();
 router.use("/telegrams", require("./telegrams"));
 
 BOT.on("message", (msg) => {
-  console.log(msg);
+  const chatId = msg.chat.id;
+  const messageText = msg.text;
+  if (messageText === "/start") {
+    BOT.sendMessage(chatId, "Welcome to the bot!");
+  }
 });
 
 module.exports = router;
