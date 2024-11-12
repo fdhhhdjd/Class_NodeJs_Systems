@@ -8,6 +8,7 @@ Explore this repository to discover a variety of SQL queries for common tasks. W
 ## COPY TABLE
 ```sql
     CREATE TABLE public.user_copy as SELECT * FROM public.user;
+    \! clear
     \dt
 ```
 
