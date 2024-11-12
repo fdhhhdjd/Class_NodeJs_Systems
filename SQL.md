@@ -285,6 +285,8 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 
     SELECT COUNT(*) FROM pg_user;
 
+    SELECT * FROM pg_roles  where rolname='tai_demo';
+
     SELECT * FROM information_schema.table_privileges WHERE grantee = 'taidev';
 ```
 
