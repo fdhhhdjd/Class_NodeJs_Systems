@@ -324,7 +324,9 @@ CALL insert_or_update_user('taidev', 'taidev@email.com', 'password6');
 
 ## 5. REVOKE
 ```sql
-    REVOKE CREATE ON TABLE public.user FROM tai_demo; 
+    REVOKE CREATE ON TABLE public.user FROM tai_demo;
+
+    REVOKE ALL ON public.products FROM tai_demo;
 
     REVOKE CREATE ON ALL TABLES IN SCHEMA public FROM tai_demo; 
 ```
