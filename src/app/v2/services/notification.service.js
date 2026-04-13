@@ -12,7 +12,7 @@ class NotificationService {
     notification,
     meta = {
       url: "https://i.pinimg.com/originals/ca/05/d1/ca05d1cf1a034f9b2eafc644c102c551.gif",
-      dl: "https://www.profile-forme.com",
+      dl: "https://www.codewebkhongkho.com",
     },
   }) {
     if (_.isEmpty(deviceId) || _.isEmpty(notification)) {
